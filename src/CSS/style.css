@@ -31,8 +31,24 @@
     bottom: 20px; 
     left: 50%;
     transform: translateX(-50%); 
+    width: calc(3 * 120px + 2 * 10px);
+    overflow: hidden;
+    cursor: pointer; 
+    transition: width 0.3s ease-in-out; 
+}
+
+#carrusel-cartas {
     display: flex;
     gap: 10px; 
+    transition: transform 0.3s ease-in-out;
+}
+
+#mano-jugador.abierto {
+    width: 90vw; 
+    max-width: fit-content;
+    overflow-x: scroll; 
+    padding-bottom: 20px; 
+    cursor: default;
 }
 
 .mano-rival-derecha {
