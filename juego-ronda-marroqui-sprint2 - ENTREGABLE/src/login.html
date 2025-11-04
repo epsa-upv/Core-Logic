@@ -4,16 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Ronda Marroquí</title>
-    
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Estilos personalizados -->
     <link rel="stylesheet" href="styles.css">
-    
     <style>
         .login-container {
             min-height: 100vh;
@@ -22,7 +15,6 @@
             justify-content: center;
             padding: 20px;
         }
-        
         .login-card {
             background: rgba(12, 35, 79, 0.95);
             border-radius: 20px;
@@ -32,29 +24,24 @@
             box-shadow: 0 20px 60px rgba(5, 18, 44, 0.6);
             border: 1px solid rgba(77, 142, 233, 0.3);
         }
-        
         .login-header {
             text-align: center;
             margin-bottom: 30px;
         }
-        
         .login-header h1 {
             color: #ffd700;
             font-size: 2.5rem;
             margin-bottom: 10px;
         }
-        
         .login-header p {
             color: rgba(255, 255, 255, 0.7);
             font-size: 1rem;
         }
-        
         .form-label {
             color: rgba(255, 255, 255, 0.9);
             font-weight: 600;
             margin-bottom: 8px;
         }
-        
         .form-control {
             background: rgba(8, 24, 58, 0.6);
             border: 1px solid rgba(77, 142, 233, 0.3);
@@ -62,18 +49,15 @@
             padding: 12px 15px;
             border-radius: 10px;
         }
-        
         .form-control:focus {
             background: rgba(8, 24, 58, 0.8);
             border-color: rgba(77, 171, 247, 0.6);
             color: #fff;
             box-shadow: 0 0 0 0.25rem rgba(77, 171, 247, 0.25);
         }
-        
         .form-control::placeholder {
             color: rgba(255, 255, 255, 0.4);
         }
-        
         .btn-login {
             background: linear-gradient(135deg, #4d8ee9, #2262d4);
             border: none;
@@ -85,12 +69,10 @@
             width: 100%;
             margin-top: 20px;
         }
-        
         .btn-login:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(45, 98, 212, 0.4);
         }
-        
         .divider {
             display: flex;
             align-items: center;
@@ -98,35 +80,29 @@
             margin: 25px 0;
             color: rgba(255, 255, 255, 0.5);
         }
-        
         .divider::before,
         .divider::after {
             content: '';
             flex: 1;
             border-bottom: 1px solid rgba(77, 142, 233, 0.3);
         }
-        
         .divider span {
             padding: 0 15px;
             font-size: 0.9rem;
         }
-        
         .register-link {
             text-align: center;
             margin-top: 20px;
         }
-        
         .register-link a {
             color: #4dabf7;
             text-decoration: none;
             font-weight: 600;
         }
-        
         .register-link a:hover {
             color: #74c0fc;
             text-decoration: underline;
         }
-        
         .alert {
             border-radius: 10px;
             margin-bottom: 20px;
@@ -143,10 +119,7 @@
                 </h1>
                 <p>Inicia sesión para jugar</p>
             </div>
-            
-            <!-- Mensaje de error/éxito -->
             <div id="messageContainer"></div>
-            
             <form id="loginForm">
                 <div class="mb-3">
                     <label for="email" class="form-label">
@@ -162,7 +135,6 @@
                         required
                     >
                 </div>
-                
                 <div class="mb-3">
                     <label for="password" class="form-label">
                         <i class="fas fa-lock me-2"></i>
@@ -177,7 +149,6 @@
                         required
                     >
                 </div>
-                
                 <div class="mb-3 form-check">
                     <input 
                         type="checkbox" 
@@ -188,17 +159,14 @@
                         Recordar sesión
                     </label>
                 </div>
-                
                 <button type="submit" class="btn btn-primary btn-login">
                     <i class="fas fa-sign-in-alt me-2"></i>
                     Iniciar Sesión
                 </button>
             </form>
-            
             <div class="divider">
                 <span>O</span>
             </div>
-            
             <div class="register-link">
                 <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 10px;">
                     ¿No tienes cuenta?
@@ -208,7 +176,6 @@
                     Regístrate aquí
                 </a>
             </div>
-            
             <div class="register-link mt-3">
                 <a href="index.html" style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;">
                     <i class="fas fa-arrow-left me-2"></i>
@@ -217,27 +184,19 @@
             </div>
         </div>
     </div>
-
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Script de autenticación -->
     <script>
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const messageContainer = document.getElementById('messageContainer');
             const submitButton = this.querySelector('button[type="submit"]');
-            
             // Limpiar mensajes anteriores
             messageContainer.innerHTML = '';
-            
             // Deshabilitar botón durante la petición
             submitButton.disabled = true;
             submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Autenticando...';
-            
             try {
                 // ============================================
                 // LLAMADA REAL AL BACKEND (MySQL + Express)
@@ -250,16 +209,12 @@
                     credentials: 'include', // Importante para las cookies de sesión
                     body: JSON.stringify({ email, password })
                 });
-                
                 const data = await response.json();
-                
                 if (response.ok && data.success) {
                     // Usuario autenticado exitosamente
                     const userData = data.user;
-                    
                     // Guardar en sessionStorage (para acceso rápido en frontend)
                     sessionStorage.setItem('currentUser', JSON.stringify(userData));
-                    
                     // Mostrar mensaje de éxito
                     messageContainer.innerHTML = `
                         <div class="alert alert-success" role="alert">
@@ -267,22 +222,17 @@
                             ¡Bienvenido ${userData.nombre_usuario}! Redirigiendo...
                         </div>
                     `;
-                    
                     console.log('✅ Usuario autenticado desde la base de datos:', userData);
-                    
                     // Redirigir al tablero de juego
                     setTimeout(() => {
                         window.location.href = 'index.html';
                     }, 1500);
-                    
                 } else {
                     // Error de autenticación
                     throw new Error(data.message || 'Error al iniciar sesión');
                 }
-                
             } catch (error) {
                 console.error('❌ Error de autenticación:', error);
-                
                 messageContainer.innerHTML = `
                     <div class="alert alert-danger" role="alert">
                         <i class="fas fa-exclamation-triangle me-2"></i>
@@ -290,20 +240,17 @@
                         <br><small>Asegúrate de que el servidor backend esté ejecutándose (npm start)</small>
                     </div>
                 `;
-                
                 // Re-habilitar botón
                 submitButton.disabled = false;
                 submitButton.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión';
             }
         });
-        
         // Verificar conexión con el backend al cargar la página
         window.addEventListener('load', async () => {
             try {
                 const response = await fetch('http://localhost:3000/api/session', {
                     credentials: 'include'
                 });
-                
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success) {
@@ -318,3 +265,4 @@
     </script>
 </body>
 </html>
+

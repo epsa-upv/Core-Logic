@@ -23,7 +23,7 @@ timeout /t 3 /nobreak > nul
 echo.
 echo [3/3] Abriendo navegador...
 echo.
-start http://localhost:3000/src/login.html
+start http://localhost:3000
 
 echo.
 echo ========================================
@@ -31,9 +31,10 @@ echo   SERVIDOR INICIADO CORRECTAMENTE
 echo ========================================
 echo.
 echo Paginas disponibles:
-echo   - Login:    http://localhost:3000/src/login.html
-echo   - Registro: http://localhost:3000/src/register.html
-echo   - Juego:    http://localhost:3000/src/index.html
+echo   - Bienvenida: http://localhost:3000
+echo   - Login:      http://localhost:3000/src/login.html
+echo   - Registro:   http://localhost:3000/src/register.html
+echo   - Juego:      http://localhost:3000/src/index.html
 echo.
 echo Presiona Ctrl+C en la ventana del backend para detener el servidor
 echo.

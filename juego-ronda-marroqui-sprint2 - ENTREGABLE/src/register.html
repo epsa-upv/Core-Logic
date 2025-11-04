@@ -4,16 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - Ronda Marroquí</title>
-    
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Estilos personalizados -->
     <link rel="stylesheet" href="styles.css">
-    
     <style>
         .register-container {
             min-height: 100vh;
@@ -22,7 +15,6 @@
             justify-content: center;
             padding: 40px 20px;
         }
-        
         .register-card {
             background: rgba(12, 35, 79, 0.95);
             border-radius: 20px;
@@ -32,29 +24,24 @@
             box-shadow: 0 20px 60px rgba(5, 18, 44, 0.6);
             border: 1px solid rgba(77, 142, 233, 0.3);
         }
-        
         .register-header {
             text-align: center;
             margin-bottom: 30px;
         }
-        
         .register-header h1 {
             color: #ffd700;
             font-size: 2.5rem;
             margin-bottom: 10px;
         }
-        
         .register-header p {
             color: rgba(255, 255, 255, 0.7);
             font-size: 1rem;
         }
-        
         .form-label {
             color: rgba(255, 255, 255, 0.9);
             font-weight: 600;
             margin-bottom: 8px;
         }
-        
         .form-control {
             background: rgba(8, 24, 58, 0.6);
             border: 1px solid rgba(77, 142, 233, 0.3);
@@ -62,18 +49,15 @@
             padding: 12px 15px;
             border-radius: 10px;
         }
-        
         .form-control:focus {
             background: rgba(8, 24, 58, 0.8);
             border-color: rgba(77, 171, 247, 0.6);
             color: #fff;
             box-shadow: 0 0 0 0.25rem rgba(77, 171, 247, 0.25);
         }
-        
         .form-control::placeholder {
             color: rgba(255, 255, 255, 0.4);
         }
-        
         .form-select {
             background: rgba(8, 24, 58, 0.6);
             border: 1px solid rgba(77, 142, 233, 0.3);
@@ -81,14 +65,12 @@
             padding: 12px 15px;
             border-radius: 10px;
         }
-        
         .form-select:focus {
             background: rgba(8, 24, 58, 0.8);
             border-color: rgba(77, 171, 247, 0.6);
             color: #fff;
             box-shadow: 0 0 0 0.25rem rgba(77, 171, 247, 0.25);
         }
-        
         .btn-register {
             background: linear-gradient(135deg, #2eaadc, #17a2b8);
             border: none;
@@ -100,12 +82,10 @@
             width: 100%;
             margin-top: 20px;
         }
-        
         .btn-register:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(46, 170, 220, 0.4);
         }
-        
         .divider {
             display: flex;
             align-items: center;
@@ -113,57 +93,47 @@
             margin: 25px 0;
             color: rgba(255, 255, 255, 0.5);
         }
-        
         .divider::before,
         .divider::after {
             content: '';
             flex: 1;
             border-bottom: 1px solid rgba(77, 142, 233, 0.3);
         }
-        
         .divider span {
             padding: 0 15px;
             font-size: 0.9rem;
         }
-        
         .login-link {
             text-align: center;
             margin-top: 20px;
         }
-        
         .login-link a {
             color: #4dabf7;
             text-decoration: none;
             font-weight: 600;
         }
-        
         .login-link a:hover {
             color: #74c0fc;
             text-decoration: underline;
         }
-        
         .alert {
             border-radius: 10px;
             margin-bottom: 20px;
         }
-        
         .password-strength {
             height: 5px;
             border-radius: 3px;
             margin-top: 5px;
             transition: all 0.3s ease;
         }
-        
         .strength-weak {
             background: #ff4b5c;
             width: 33%;
         }
-        
         .strength-medium {
             background: #ffc107;
             width: 66%;
         }
-        
         .strength-strong {
             background: #2eaadc;
             width: 100%;
@@ -180,10 +150,7 @@
                 </h1>
                 <p>Crea tu cuenta para empezar a jugar</p>
             </div>
-            
-            <!-- Mensaje de error/éxito -->
             <div id="messageContainer"></div>
-            
             <form id="registerForm">
                 <div class="mb-3">
                     <label for="username" class="form-label">
@@ -204,7 +171,6 @@
                         Mínimo 3 caracteres
                     </small>
                 </div>
-                
                 <div class="mb-3">
                     <label for="email" class="form-label">
                         <i class="fas fa-envelope me-2"></i>
@@ -219,7 +185,6 @@
                         required
                     >
                 </div>
-                
                 <div class="mb-3">
                     <label for="password" class="form-label">
                         <i class="fas fa-lock me-2"></i>
@@ -239,7 +204,6 @@
                         Mínimo 6 caracteres
                     </small>
                 </div>
-                
                 <div class="mb-3">
                     <label for="confirmPassword" class="form-label">
                         <i class="fas fa-lock me-2"></i>
@@ -254,7 +218,6 @@
                         required
                     >
                 </div>
-                
                 <div class="mb-3">
                     <label for="rol" class="form-label">
                         <i class="fas fa-user-tag me-2"></i>
@@ -265,7 +228,6 @@
                         <option value="admin">Administrador</option>
                     </select>
                 </div>
-                
                 <div class="mb-3 form-check">
                     <input 
                         type="checkbox" 
@@ -277,17 +239,14 @@
                         Acepto los <a href="#" style="color: #4dabf7;">términos y condiciones</a>
                     </label>
                 </div>
-                
                 <button type="submit" class="btn btn-primary btn-register">
                     <i class="fas fa-user-plus me-2"></i>
                     Crear Cuenta
                 </button>
             </form>
-            
             <div class="divider">
                 <span>O</span>
             </div>
-            
             <div class="login-link">
                 <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 10px;">
                     ¿Ya tienes cuenta?
@@ -297,7 +256,6 @@
                     Inicia sesión aquí
                 </a>
             </div>
-            
             <div class="login-link mt-3">
                 <a href="index.html" style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;">
                     <i class="fas fa-arrow-left me-2"></i>
@@ -306,17 +264,12 @@
             </div>
         </div>
     </div>
-
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Script de registro -->
     <script>
         // Indicador de fuerza de contraseña
         document.getElementById('password').addEventListener('input', function(e) {
             const password = e.target.value;
             const strengthIndicator = document.getElementById('passwordStrength');
-            
             // Calcular fuerza
             let strength = 0;
             if (password.length >= 6) strength++;
@@ -324,7 +277,6 @@
             if (/[A-Z]/.test(password)) strength++;
             if (/[0-9]/.test(password)) strength++;
             if (/[^A-Za-z0-9]/.test(password)) strength++;
-            
             // Actualizar indicador
             strengthIndicator.className = 'password-strength';
             if (strength <= 2) {
@@ -335,11 +287,9 @@
                 strengthIndicator.classList.add('strength-strong');
             }
         });
-        
         // Manejo del formulario de registro
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const username = document.getElementById('username').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -347,28 +297,22 @@
             const rol = document.getElementById('rol').value;
             const messageContainer = document.getElementById('messageContainer');
             const submitButton = this.querySelector('button[type="submit"]');
-            
             // Limpiar mensajes anteriores
             messageContainer.innerHTML = '';
-            
             try {
                 // Validaciones en el frontend
                 if (password !== confirmPassword) {
                     throw new Error('Las contraseñas no coinciden');
                 }
-                
                 if (password.length < 6) {
                     throw new Error('La contraseña debe tener al menos 6 caracteres');
                 }
-                
                 if (!username || username.length < 3) {
                     throw new Error('El nombre de usuario debe tener al menos 3 caracteres');
                 }
-                
                 // Deshabilitar botón durante la petición
                 submitButton.disabled = true;
                 submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Registrando...';
-                
                 // ============================================
                 // LLAMADA REAL AL BACKEND (MySQL + Express)
                 // ============================================
@@ -385,13 +329,10 @@
                         rol 
                     })
                 });
-                
                 const data = await response.json();
-                
                 if (response.ok && data.success) {
                     // Usuario registrado exitosamente en la base de datos
                     const userData = data.user;
-                    
                     // Mostrar mensaje de éxito
                     messageContainer.innerHTML = `
                         <div class="alert alert-success" role="alert">
@@ -400,22 +341,17 @@
                             <br><small>Redirigiendo al login...</small>
                         </div>
                     `;
-                    
                     console.log('✅ Usuario registrado en la base de datos:', userData);
-                    
                     // Redirigir al login
                     setTimeout(() => {
                         window.location.href = 'login.html';
                     }, 2000);
-                    
                 } else {
                     // Error en el registro
                     throw new Error(data.message || 'Error al registrar usuario');
                 }
-                
             } catch (error) {
                 console.error('❌ Error de registro:', error);
-                
                 messageContainer.innerHTML = `
                     <div class="alert alert-danger" role="alert">
                         <i class="fas fa-exclamation-triangle me-2"></i>
@@ -423,7 +359,6 @@
                         <br><small>Asegúrate de que el servidor backend esté ejecutándose (npm start)</small>
                     </div>
                 `;
-                
                 // Re-habilitar botón
                 submitButton.disabled = false;
                 submitButton.innerHTML = '<i class="fas fa-user-plus me-2"></i>Registrarse';
@@ -432,3 +367,4 @@
     </script>
 </body>
 </html>
+

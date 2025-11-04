@@ -4,18 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ronda Marroquí - Tablero de Juego</title>
-    
-    <!-- Bootstrap CSS desde CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Estilos personalizados -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Hero de bienvenida -->
     <section class="hero-banner text-light">
         <div class="container hero-inner">
             <div class="hero-copy">
@@ -57,8 +50,6 @@
             </div>
         </div>
     </section>
-
-    <!-- Contenedor principal -->
     <div class="container-fluid game-container">
         <header class="game-header py-4 shadow-sm">
             <div class="header-content">
@@ -82,12 +73,8 @@
                 <span class="header-chip"><i class="fas fa-shield-alt me-2"></i>Moderación en vivo 24/7</span>
             </div>
         </header>
-
-        <!-- Shell para tablero + panel lateral -->
         <div class="game-shell">
-            <!-- Área de juego principal -->
             <div class="game-board">
-                <!-- Oponentes superiores -->
                 <div class="opponents-top row justify-content-center mb-4">
                     <div class="col-md-4 text-center">
                         <div class="player-info opponent">
@@ -108,7 +95,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-4 text-center">
                         <div class="player-info opponent current-turn">
                             <div class="player-name">
@@ -129,7 +115,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-4 text-center">
                         <div class="player-info opponent">
                             <div class="player-name">
@@ -150,8 +135,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Zona central -->
                 <div class="center-area row justify-content-center align-items-center my-4">
                     <div class="col-auto text-center">
                         <div class="deck-container glass-card">
@@ -167,7 +150,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-auto">
                         <div class="direction-indicator">
                             <i class="fas fa-arrow-right fa-3x text-warning"></i>
@@ -176,7 +158,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-auto text-center">
                         <div class="discard-container glass-card">
                             <div class="discard-label mb-2">
@@ -192,8 +173,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Jugador actual -->
                 <div class="player-area">
                     <div class="player-info current-player">
                         <div class="player-name text-center mb-3">
@@ -229,8 +208,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Panel lateral de insights -->
             <aside class="insights-panel" aria-label="Panel de apoyo">
                 <div class="panel-icon-grid" role="tablist" aria-label="Selector de información">
                     <button class="panel-icon-button active" type="button" id="tab-guide" data-target="panel-guide" aria-controls="panel-guide" aria-expanded="true">
@@ -250,7 +227,6 @@
                         <span>Glosario</span>
                     </button>
                 </div>
-
                 <div class="panel-content">
                     <section class="panel-section active" id="panel-guide" data-panel role="tabpanel" aria-labelledby="tab-guide">
                         <h3 class="panel-title"><i class="fas fa-compass me-2"></i>Guía express</h3>
@@ -260,7 +236,6 @@
                             <li><span class="dot dot-danger"></span>La pila de descarte revela la carta que se debe seguir.</li>
                         </ul>
                     </section>
-
                     <section class="panel-section" id="panel-metrics" data-panel role="tabpanel" aria-labelledby="tab-metrics">
                         <h3 class="panel-title"><i class="fas fa-chart-pie me-2"></i>Resumen rápido</h3>
                         <div class="panel-metrics">
@@ -281,7 +256,6 @@
                             </div>
                         </div>
                     </section>
-
                     <section class="panel-section" id="panel-log" data-panel role="tabpanel" aria-labelledby="tab-log">
                         <h3 class="panel-title"><i class="fas fa-history me-2"></i>Bitácora visual</h3>
                         <ol class="panel-timeline">
@@ -291,7 +265,6 @@
                             <li><span>Jugador 4</span> prepara contraataque.</li>
                         </ol>
                     </section>
-
                     <section class="panel-section glass-card soft-highlight" id="panel-glossary" data-panel role="tabpanel" aria-labelledby="tab-glossary">
                         <h3 class="panel-title"><i class="fas fa-graduation-cap me-2"></i>Glosario express</h3>
                         <dl class="glossary">
@@ -312,8 +285,6 @@
                 </div>
             </aside>
         </div>
-
-        <!-- Leyenda de cartas especiales -->
         <section class="special-legend mt-5">
             <h3 class="legend-title text-center text-light mb-4">
                 <i class="fas fa-star me-2"></i>
@@ -342,8 +313,6 @@
                 </div>
             </div>
         </section>
-
-        <!-- Pie de página -->
         <footer class="game-footer py-5 mt-5">
             <div class="footer-grid">
                 <div class="footer-brand">
@@ -385,11 +354,9 @@
             </div>
         </footer>
     </div>
-
-    <!-- Bootstrap JS desde CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- JavaScript de la aplicación -->
     <script src="RondaGame.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
+

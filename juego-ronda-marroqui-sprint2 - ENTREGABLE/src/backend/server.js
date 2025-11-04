@@ -1,12 +1,3 @@
-/**
- * Servidor Backend para Ronda Marroquí
- * 
- * @description Servidor Express que maneja autenticación y conexión con MySQL
- * @author Sprint 2 Team
- * @version 2.0
- * @date 04/11/2025
- */
-
 const express = require('express');
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
@@ -14,26 +5,22 @@ const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
 
-// Crear aplicación Express
 const app = express();
 const PORT = 3000;
 
-// Configuración de la base de datos (XAMPP)
 const dbConfig = {
     host: 'localhost',
     port: 3306,
     user: 'root',
-    password: '', // XAMPP por defecto no tiene contraseña
+    password: '',
     database: 'ronda_marroqui',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
 };
 
-// Crear pool de conexiones
 const pool = mysql.createPool(dbConfig);
 
-// Middlewares
 app.use(cors({
     origin: 'http://localhost:3000',
     credentials: true
@@ -41,34 +28,27 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Configurar sesiones
 app.use(session({
     secret: 'ronda_marroqui_secret_2025',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false, // Cambiar a true en producción con HTTPS
+        secure: false,
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 // 24 horas
+        maxAge: 24 * 60 * 60 * 1000
     }
 }));
 
-// Servir archivos estáticos
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'welcome.html'));
+});
+
 app.use(express.static(path.join(__dirname, '..')));
 
-// ============================================================================
-// RUTAS DE AUTENTICACIÓN
-// ============================================================================
-
-/**
- * POST /api/register
- * Registra un nuevo usuario en la base de datos
- */
 app.post('/api/register', async (req, res) => {
     const { username, email, password, rol } = req.body;
     
     try {
-        // Validaciones
         if (!username || !email || !password || !rol) {
             return res.status(400).json({ 
                 success: false, 
@@ -83,7 +63,6 @@ app.post('/api/register', async (req, res) => {
             });
         }
         
-        // Verificar si el email ya existe
         const [existingUsers] = await pool.query(
             'SELECT id_usuario FROM Usuario WHERE email = ?',
             [email]
@@ -96,7 +75,6 @@ app.post('/api/register', async (req, res) => {
             });
         }
         
-        // Verificar si el nombre de usuario ya existe
         const [existingUsernames] = await pool.query(
             'SELECT id_usuario FROM Usuario WHERE nombre_usuario = ?',
             [username]
@@ -109,13 +87,11 @@ app.post('/api/register', async (req, res) => {
             });
         }
         
-        // Hashear contraseña
         const hashedPassword = await bcrypt.hash(password, 10);
         
-        // Insertar usuario en la base de datos
         const [result] = await pool.query(
             `INSERT INTO Usuario 
-            (nombre_usuario, email, contraseña, rol, fecha_registro) 
+            (nombre_usuario, email, contraseña_hash, rol, fecha_registro) 
             VALUES (?, ?, ?, ?, NOW())`,
             [username, email, hashedPassword, rol]
         );
@@ -143,15 +119,10 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-/**
- * POST /api/login
- * Autentica un usuario y crea una sesión
- */
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
     
     try {
-        // Validaciones
         if (!email || !password) {
             return res.status(400).json({ 
                 success: false, 
@@ -159,9 +130,8 @@ app.post('/api/login', async (req, res) => {
             });
         }
         
-        // Buscar usuario por email
         const [users] = await pool.query(
-            `SELECT id_usuario, nombre_usuario, email, contraseña, rol,
+            `SELECT id_usuario, nombre_usuario, email, contraseña_hash, rol,
                     partidas_ganadas, partidas_perdidas, partidas_jugadas
              FROM Usuario 
              WHERE email = ?`,
@@ -177,8 +147,7 @@ app.post('/api/login', async (req, res) => {
         
         const user = users[0];
         
-        // Verificar contraseña
-        const passwordMatch = await bcrypt.compare(password, user.contraseña);
+        const passwordMatch = await bcrypt.compare(password, user.contraseña_hash);
         
         if (!passwordMatch) {
             return res.status(401).json({ 
@@ -187,14 +156,12 @@ app.post('/api/login', async (req, res) => {
             });
         }
         
-        // Crear sesión
         req.session.userId = user.id_usuario;
         req.session.username = user.nombre_usuario;
         req.session.rol = user.rol;
         
         console.log(`✅ Usuario autenticado: ${user.nombre_usuario} (${user.rol})`);
         
-        // Devolver datos del usuario (sin contraseña)
         const userData = {
             id_usuario: user.id_usuario,
             nombre_usuario: user.nombre_usuario,
@@ -221,10 +188,6 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-/**
- * POST /api/logout
- * Cierra la sesión del usuario
- */
 app.post('/api/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -240,10 +203,6 @@ app.post('/api/logout', (req, res) => {
     });
 });
 
-/**
- * GET /api/session
- * Obtiene la sesión actual del usuario
- */
 app.get('/api/session', async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ 
@@ -282,10 +241,6 @@ app.get('/api/session', async (req, res) => {
     }
 });
 
-// ============================================================================
-// MIDDLEWARE DE AUTENTICACIÓN
-// ============================================================================
-
 function requireAuth(req, res, next) {
     if (!req.session.userId) {
         return res.status(401).json({ 
@@ -295,10 +250,6 @@ function requireAuth(req, res, next) {
     }
     next();
 }
-
-// ============================================================================
-// RUTAS PROTEGIDAS (Ejemplo)
-// ============================================================================
 
 app.get('/api/profile', requireAuth, async (req, res) => {
     try {
@@ -320,19 +271,6 @@ app.get('/api/profile', requireAuth, async (req, res) => {
     }
 });
 
-// ============================================================================
-// RUTA RAÍZ
-// ============================================================================
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'index.html'));
-});
-
-// ============================================================================
-// INICIAR SERVIDOR
-// ============================================================================
-
-// Probar conexión a la base de datos
 pool.getConnection()
     .then(connection => {
         console.log('✅ Conexión exitosa a MySQL');
@@ -340,7 +278,6 @@ pool.getConnection()
         console.log(`   Host: ${dbConfig.host}:${dbConfig.port}`);
         connection.release();
         
-        // Iniciar servidor
         app.listen(PORT, () => {
             console.log('');
             console.log('╔════════════════════════════════════════╗');
@@ -375,7 +312,6 @@ pool.getConnection()
         process.exit(1);
     });
 
-// Manejar errores no capturados
 process.on('uncaughtException', (error) => {
     console.error('❌ Error no capturado:', error);
 });
