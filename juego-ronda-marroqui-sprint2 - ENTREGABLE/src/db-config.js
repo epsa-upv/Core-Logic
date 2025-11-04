@@ -15,7 +15,6 @@ const securityConfig = {
     sessionSecret: 'ronda_session_secret_2025', // Cambiar en producción
     sessionMaxAge: 24 * 60 * 60 * 1000 // 24 horas
 };
-
 function createConnectionPool() {
     try {
         if (typeof require !== 'undefined') {

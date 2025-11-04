@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Ronda Marroquí</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .profile-header {
+            background: linear-gradient(135deg, #0a2463 0%, #1e5a9e 100%);
+            padding: 40px 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+            margin: 0 auto 20px;
+            border: 5px solid rgba(255,255,255,0.3);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .stat-card .stat-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-card .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #0a2463;
+            margin: 10px 0;
+        }
+        .stat-card .stat-label {
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0a2463;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #4facfe;
+        }
+        .progress-bar-custom {
+            height: 25px;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            box-shadow: 0 3px 10px rgba(79, 172, 254, 0.3);
+        }
+        .ranking-table {
+            width: 100%;
+        }
+        .ranking-table th {
+            background: #0a2463;
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+        }
+        .ranking-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+            font-weight: 500;
+        }
+        .ranking-table tr:hover {
+            background: #f8f9fa;
+        }
+        .current-user-row {
+            background: #e3f2fd !important;
+            font-weight: bold;
+        }
+        .current-user-row td {
+            color: #0a2463 !important;
+            font-weight: 700 !important;
+        }
+        .badge-rank {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .rank-1 { 
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); 
+            color: white; 
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
+        }
+        .rank-2 { 
+            background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%); 
+            color: white; 
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            box-shadow: 0 3px 10px rgba(192, 192, 192, 0.4);
+        }
+        .rank-3 { 
+            background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%); 
+            color: white; 
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            box-shadow: 0 3px 10px rgba(205, 127, 50, 0.4);
+        }
+        .rank-other { 
+            background: #e0e0e0; 
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+        .edit-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .edit-section .form-label {
+            color: #0a2463;
+            font-weight: 700;
+        }
+        .edit-section .text-muted {
+            color: #666 !important;
+            font-size: 13px;
+        }
+        .btn-save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+        .btn-save:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-back {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+        }
+        .win-rate-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(#4facfe 0%, #4facfe var(--percentage), #e0e0e0 var(--percentage));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+        }
+        .win-rate-inner {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .win-rate-inner .text-muted {
+            color: #666 !important;
+            font-weight: 600;
+        }
+        .win-rate-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #0a2463;
+        }
+        .section-card .text-muted {
+            color: #555 !important;
+            font-weight: 600;
+        }
+        .section-card span:not(.badge) {
+            color: #333;
+            font-weight: 500;
+        }
+        .alert-custom {
+            border-radius: 10px;
+            border: none;
+            padding: 15px 20px;
+        }
+        .badge.bg-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            padding: 6px 12px;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        }
+        .badge.bg-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+            padding: 6px 12px;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+        }
+        .badge.bg-primary {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
+            padding: 6px 12px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(13, 110, 253, 0.3);
+        }
+        .ranking-table td strong {
+            color: #0a2463;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <button onclick="window.location.href='index.html'" class="btn btn-back mb-4">
+            <i class="fas fa-arrow-left me-2"></i>Volver al Juego
+        </button>
+        <div id="loadingSpinner" class="text-center my-5">
+            <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-3 text-white fs-5 fw-bold">Cargando perfil...</p>
+        </div>
+        <div id="profileContent" style="display: none;">
+            <div class="profile-header text-center">
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h1 id="userName">Usuario</h1>
+                <p class="mb-1"><i class="fas fa-envelope me-2"></i><span id="userEmail"></span></p>
+                <p class="mb-0">
+                    <span class="badge bg-light text-dark px-3 py-2">
+                        <i class="fas fa-crown me-2"></i><span id="userRole"></span>
+                    </span>
+                </p>
+                <p class="mt-3 mb-0 opacity-75">
+                    <i class="fas fa-calendar-alt me-2"></i>Miembro desde: <span id="userSince"></span>
+                </p>
+            </div>
+            <div id="alertContainer"></div>
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="stat-card text-center">
+                        <i class="fas fa-trophy stat-icon"></i>
+                        <div class="stat-value" id="statWins">0</div>
+                        <div class="stat-label">Partidas Ganadas</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card text-center">
+                        <i class="fas fa-gamepad stat-icon"></i>
+                        <div class="stat-value" id="statPlayed">0</div>
+                        <div class="stat-label">Partidas Jugadas</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card text-center">
+                        <i class="fas fa-times-circle stat-icon"></i>
+                        <div class="stat-value" id="statLosses">0</div>
+                        <div class="stat-label">Partidas Perdidas</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="section-card">
+                        <h3 class="section-title">
+                            <i class="fas fa-chart-line me-2"></i>Ratio de Victoria
+                        </h3>
+                        <div class="win-rate-circle" id="winRateCircle">
+                            <div class="win-rate-inner">
+                                <div class="win-rate-value" id="winRateValue">0%</div>
+                                <small class="text-muted">Win Rate</small>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Progreso</span>
+                                <span class="fw-bold" id="winRateText">0%</span>
+                            </div>
+                            <div class="progress" style="height: 25px; border-radius: 12px;">
+                                <div class="progress-bar-custom" id="winRateBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="section-card">
+                        <h3 class="section-title">
+                            <i class="fas fa-edit me-2"></i>Editar Perfil
+                        </h3>
+                        <div class="edit-section">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Nombre de Usuario</label>
+                                <input type="text" class="form-control" id="editUsername" placeholder="Nuevo nombre de usuario">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Email</label>
+                                <input type="email" class="form-control" id="editEmail" placeholder="Nuevo email">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Nueva Contraseña</label>
+                                <input type="password" class="form-control" id="editPassword" placeholder="Dejar vacío para no cambiar">
+                                <small class="text-muted">Mínimo 6 caracteres</small>
+                            </div>
+                            <button onclick="updateProfile()" class="btn btn-save w-100">
+                                <i class="fas fa-save me-2"></i>Guardar Cambios
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-medal me-2"></i>Ranking Global
+                </h3>
+                <div class="table-responsive">
+                    <table class="ranking-table">
+                        <thead>
+                            <tr>
+                                <th style="border-radius: 10px 0 0 0;">Posición</th>
+                                <th>Jugador</th>
+                                <th>Ganadas</th>
+                                <th>Jugadas</th>
+                                <th>Perdidas</th>
+                                <th style="border-radius: 0 10px 0 0;">Win Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rankingTableBody">
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Cargando...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let currentUser = null;
+        async function loadProfile() {
+            try {
+                const response = await fetch('http://localhost:3002/api/session', {
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                const data = await response.json();
+                if (data.success) {
+                    currentUser = data.user;
+                    displayUserProfile(currentUser);
+                    await loadGlobalRanking();
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    document.getElementById('profileContent').style.display = 'block';
+                } else {
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('Error al cargar perfil:', error);
+                showAlert('Error al cargar el perfil', 'danger');
+            }
+        }
+        function displayUserProfile(user) {
+            document.getElementById('userName').textContent = user.nombre_usuario;
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('userRole').textContent = user.rol === 'jugador' ? 'Jugador' : 'Administrador';
+            const date = new Date(user.fecha_registro);
+            document.getElementById('userSince').textContent = date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('statWins').textContent = user.partidas_ganadas || 0;
+            document.getElementById('statPlayed').textContent = user.partidas_jugadas || 0;
+            document.getElementById('statLosses').textContent = user.partidas_perdidas || 0;
+            const winRate = user.partidas_jugadas > 0 
+                ? ((user.partidas_ganadas / user.partidas_jugadas) * 100).toFixed(1)
+                : 0;
+            document.getElementById('winRateValue').textContent = winRate + '%';
+            document.getElementById('winRateText').textContent = winRate + '%';
+            document.getElementById('winRateBar').style.width = winRate + '%';
+            const circle = document.getElementById('winRateCircle');
+            circle.style.setProperty('--percentage', winRate + '%');
+            document.getElementById('editUsername').value = user.nombre_usuario;
+            document.getElementById('editEmail').value = user.email;
+        }
+        async function loadGlobalRanking() {
+            try {
+                const response = await fetch('http://localhost:3002/api/ranking', {
+                    credentials: 'include'
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        displayRanking(data.ranking);
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar ranking:', error);
+                document.getElementById('rankingTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-danger">
+                            Error al cargar el ranking
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        function displayRanking(ranking) {
+            const tbody = document.getElementById('rankingTableBody');
+            if (ranking.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center">No hay jugadores en el ranking</td>
+                    </tr>
+                `;
+                return;
+            }
+            tbody.innerHTML = ranking.map((player, index) => {
+                const position = index + 1;
+                const isCurrentUser = currentUser && player.id_usuario === currentUser.id_usuario;
+                const winRate = player.partidas_jugadas > 0
+                    ? ((player.partidas_ganadas / player.partidas_jugadas) * 100).toFixed(1)
+                    : 0;
+                let rankBadge = '';
+                if (position === 1) {
+                    rankBadge = '<span class="badge-rank rank-1"><i class="fas fa-trophy me-1"></i>1°</span>';
+                } else if (position === 2) {
+                    rankBadge = '<span class="badge-rank rank-2"><i class="fas fa-medal me-1"></i>2°</span>';
+                } else if (position === 3) {
+                    rankBadge = '<span class="badge-rank rank-3"><i class="fas fa-medal me-1"></i>3°</span>';
+                } else {
+                    rankBadge = `<span class="badge-rank rank-other">${position}°</span>`;
+                }
+                return `
+                    <tr class="${isCurrentUser ? 'current-user-row' : ''}">
+                        <td>${rankBadge}</td>
+                        <td>
+                            <i class="fas fa-user-circle me-2"></i>
+                            ${player.nombre_usuario}
+                            ${isCurrentUser ? '<span class="badge bg-primary ms-2">Tú</span>' : ''}
+                        </td>
+                        <td><span class="badge bg-success">${player.partidas_ganadas}</span></td>
+                        <td>${player.partidas_jugadas}</td>
+                        <td><span class="badge bg-danger">${player.partidas_perdidas}</span></td>
+                        <td><strong>${winRate}%</strong></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        async function updateProfile() {
+            const username = document.getElementById('editUsername').value.trim();
+            const email = document.getElementById('editEmail').value.trim();
+            const password = document.getElementById('editPassword').value;
+            if (!username || !email) {
+                showAlert('El nombre de usuario y email son obligatorios', 'warning');
+                return;
+            }
+            if (password && password.length < 6) {
+                showAlert('La contraseña debe tener al menos 6 caracteres', 'warning');
+                return;
+            }
+            const updateData = {
+                nombre_usuario: username,
+                email: email
+            };
+            if (password) {
+                updateData.password = password;
+            }
+            try {
+                const response = await fetch('http://localhost:3002/api/profile/update', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(updateData)
+                });
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    showAlert('✅ Perfil actualizado exitosamente', 'success');
+                    document.getElementById('editPassword').value = '';
+                    await loadProfile();
+                } else {
+                    const errorMsg = data.message || 'Error al actualizar el perfil';
+                    if (errorMsg.includes('email')) {
+                        showAlert('❌ ' + errorMsg + ' - Intenta con otro email', 'danger');
+                    } else if (errorMsg.includes('nombre de usuario')) {
+                        showAlert('❌ ' + errorMsg + ' - Intenta con otro nombre de usuario', 'danger');
+                    } else {
+                        showAlert('❌ ' + errorMsg, 'danger');
+                    }
+                }
+            } catch (error) {
+                console.error('Error al actualizar perfil:', error);
+                if (error.message.includes('fetch')) {
+                    showAlert('❌ No se pudo conectar con el servidor - Verifica que esté ejecutándose', 'danger');
+                } else {
+                    showAlert('❌ Error de conexión al actualizar el perfil', 'danger');
+                }
+            }
+        }
+        function showAlert(message, type) {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-custom alert-dismissible fade show`;
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            container.appendChild(alert);
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+        window.onload = loadProfile;
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

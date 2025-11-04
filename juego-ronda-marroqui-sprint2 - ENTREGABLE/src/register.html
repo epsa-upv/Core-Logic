@@ -266,18 +266,15 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Indicador de fuerza de contraseña
         document.getElementById('password').addEventListener('input', function(e) {
             const password = e.target.value;
             const strengthIndicator = document.getElementById('passwordStrength');
-            // Calcular fuerza
             let strength = 0;
             if (password.length >= 6) strength++;
             if (password.length >= 10) strength++;
             if (/[A-Z]/.test(password)) strength++;
             if (/[0-9]/.test(password)) strength++;
             if (/[^A-Za-z0-9]/.test(password)) strength++;
-            // Actualizar indicador
             strengthIndicator.className = 'password-strength';
             if (strength <= 2) {
                 strengthIndicator.classList.add('strength-weak');
@@ -287,7 +284,6 @@
                 strengthIndicator.classList.add('strength-strong');
             }
         });
-        // Manejo del formulario de registro
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const username = document.getElementById('username').value;
@@ -297,10 +293,8 @@
             const rol = document.getElementById('rol').value;
             const messageContainer = document.getElementById('messageContainer');
             const submitButton = this.querySelector('button[type="submit"]');
-            // Limpiar mensajes anteriores
             messageContainer.innerHTML = '';
             try {
-                // Validaciones en el frontend
                 if (password !== confirmPassword) {
                     throw new Error('Las contraseñas no coinciden');
                 }
@@ -310,13 +304,9 @@
                 if (!username || username.length < 3) {
                     throw new Error('El nombre de usuario debe tener al menos 3 caracteres');
                 }
-                // Deshabilitar botón durante la petición
                 submitButton.disabled = true;
                 submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Registrando...';
-                // ============================================
-                // LLAMADA REAL AL BACKEND (MySQL + Express)
-                // ============================================
-                const response = await fetch('http://localhost:3000/api/register', {
+                const response = await fetch('http://localhost:3002/api/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -331,9 +321,7 @@
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
-                    // Usuario registrado exitosamente en la base de datos
                     const userData = data.user;
-                    // Mostrar mensaje de éxito
                     messageContainer.innerHTML = `
                         <div class="alert alert-success" role="alert">
                             <i class="fas fa-check-circle me-2"></i>
@@ -342,29 +330,41 @@
                         </div>
                     `;
                     console.log('✅ Usuario registrado en la base de datos:', userData);
-                    // Redirigir al login
                     setTimeout(() => {
                         window.location.href = 'login.html';
                     }, 2000);
                 } else {
-                    // Error en el registro
                     throw new Error(data.message || 'Error al registrar usuario');
                 }
             } catch (error) {
                 console.error('❌ Error de registro:', error);
+                let errorMessage = error.message;
+                let errorDetails = '';
+                
+                if (error.message.includes('fetch')) {
+                    errorMessage = 'No se pudo conectar con el servidor';
+                    errorDetails = 'Asegúrate de que el servidor backend esté ejecutándose en el puerto 3002';
+                } else if (error.message === 'Las contraseñas no coinciden') {
+                    errorDetails = 'Por favor, verifica que ambas contraseñas sean idénticas';
+                } else if (error.message.includes('contraseña')) {
+                    errorDetails = 'Usa una contraseña más segura con al menos 6 caracteres';
+                } else if (error.message.includes('nombre de usuario')) {
+                    errorDetails = 'Intenta con otro nombre de usuario diferente';
+                } else if (error.message.includes('email')) {
+                    errorDetails = 'Intenta con otro email o inicia sesión si ya tienes cuenta';
+                }
+                
                 messageContainer.innerHTML = `
                     <div class="alert alert-danger" role="alert">
                         <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Error:</strong> ${error.message}
-                        <br><small>Asegúrate de que el servidor backend esté ejecutándose (npm start)</small>
+                        <strong>Error:</strong> ${errorMessage}
+                        ${errorDetails ? `<br><small>${errorDetails}</small>` : ''}
                     </div>
                 `;
-                // Re-habilitar botón
                 submitButton.disabled = false;
-                submitButton.innerHTML = '<i class="fas fa-user-plus me-2"></i>Registrarse';
+                submitButton.innerHTML = '<i class="fas fa-user-plus me-2"></i>Crear Cuenta';
             }
         });
     </script>
 </body>
 </html>
-

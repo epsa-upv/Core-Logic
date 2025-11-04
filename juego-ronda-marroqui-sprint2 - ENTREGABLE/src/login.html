@@ -192,16 +192,11 @@
             const password = document.getElementById('password').value;
             const messageContainer = document.getElementById('messageContainer');
             const submitButton = this.querySelector('button[type="submit"]');
-            // Limpiar mensajes anteriores
             messageContainer.innerHTML = '';
-            // Deshabilitar botón durante la petición
             submitButton.disabled = true;
             submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Autenticando...';
             try {
-                // ============================================
-                // LLAMADA REAL AL BACKEND (MySQL + Express)
-                // ============================================
-                const response = await fetch('http://localhost:3000/api/login', {
+                const response = await fetch('http://localhost:3002/api/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -211,11 +206,8 @@
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
-                    // Usuario autenticado exitosamente
                     const userData = data.user;
-                    // Guardar en sessionStorage (para acceso rápido en frontend)
                     sessionStorage.setItem('currentUser', JSON.stringify(userData));
-                    // Mostrar mensaje de éxito
                     messageContainer.innerHTML = `
                         <div class="alert alert-success" role="alert">
                             <i class="fas fa-check-circle me-2"></i>
@@ -223,32 +215,40 @@
                         </div>
                     `;
                     console.log('✅ Usuario autenticado desde la base de datos:', userData);
-                    // Redirigir al tablero de juego
                     setTimeout(() => {
                         window.location.href = 'index.html';
                     }, 1500);
                 } else {
-                    // Error de autenticación
                     throw new Error(data.message || 'Error al iniciar sesión');
                 }
             } catch (error) {
                 console.error('❌ Error de autenticación:', error);
+                let errorMessage = error.message;
+                let errorDetails = '';
+                
+                if (error.message.includes('fetch')) {
+                    errorMessage = 'No se pudo conectar con el servidor';
+                    errorDetails = 'Asegúrate de que el servidor backend esté ejecutándose en el puerto 3002';
+                } else if (error.message.includes('incorrectos')) {
+                    errorDetails = 'Verifica tu email y contraseña. Si no tienes cuenta, regístrate primero';
+                } else if (error.message.includes('obligatorios')) {
+                    errorDetails = 'Por favor, completa todos los campos requeridos';
+                }
+                
                 messageContainer.innerHTML = `
                     <div class="alert alert-danger" role="alert">
                         <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Error:</strong> ${error.message}
-                        <br><small>Asegúrate de que el servidor backend esté ejecutándose (npm start)</small>
+                        <strong>Error:</strong> ${errorMessage}
+                        ${errorDetails ? `<br><small>${errorDetails}</small>` : ''}
                     </div>
                 `;
-                // Re-habilitar botón
                 submitButton.disabled = false;
                 submitButton.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión';
             }
         });
-        // Verificar conexión con el backend al cargar la página
         window.addEventListener('load', async () => {
             try {
-                const response = await fetch('http://localhost:3000/api/session', {
+                const response = await fetch('http://localhost:3002/api/session', {
                     credentials: 'include'
                 });
                 if (response.ok) {
@@ -265,4 +265,3 @@
     </script>
 </body>
 </html>
-
