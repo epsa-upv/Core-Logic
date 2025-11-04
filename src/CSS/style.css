@@ -1,0 +1,168 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.mesa {
+    width: 100vw;
+    height: 100vh;
+    background-color: #1b5e20;
+}
+
+
+
+.mesa img {
+    width: 120px;
+    height: 180px;
+    border: 1px solid white;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+
+.carta-central {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    gap: 40px;
+}
+
+
+.mano-jugador {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(3 * 120px + 2 * 10px);
+    overflow: hidden;
+    cursor: pointer;
+    transition: width 0.3s ease-in-out;
+}
+
+.carrusel-cartas {
+    display: flex;
+    gap: 10px;
+    transition: transform 0.3s ease-in-out;
+}
+
+#mano-jugador.abierto {
+    width: 90vw;
+    max-width: fit-content;
+    overflow-x: scroll;
+    padding-bottom: 20px;
+    cursor: default;
+}
+
+.mano-rival-derecha {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-55%);
+    display: flex;
+    flex-direction: column;
+}
+
+.mano-rival-derecha img {
+    transform: rotate(90deg);
+    margin-bottom: -50px;
+}
+
+.mano-rival-arriba {
+    position: absolute;
+    left: 50%;
+    top: 20px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+
+.mano-rival-izquierda {
+    position: absolute;
+    left: 40px;
+    top: 50%;
+    transform: translateY(-55%);
+    display: flex;
+    flex-direction: column;
+}
+
+.mano-rival-izquierda img {
+    transform: rotate(-90deg);
+    margin-bottom: -50px;
+}
+
+.rival-info {
+    color: white;
+    font-size: 20px;
+}
+
+.centrar-indice {
+    font-family: 'Inter', sans-serif;
+    background-color: #2C3E50;
+    background-image: linear-gradient(135deg, #2C3E50 0%, #1c2833 100%);
+    min-height: 100vh;
+    color: #fff;
+}
+
+.sombreado-indice {
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.4), 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.sombreado-indice:hover {
+    transform: scale(1.02);
+}
+
+.titulo-principal {
+    color: #FFD700;
+    font-size: 4rem;
+    font-weight: 800;
+}
+
+.contenedor-jugar {
+    background-color: #d99000;
+    border: none;
+}
+
+.contenedor-torneos {
+    background-color: #c0392b;
+    border: none;
+}
+
+.contenedor-reglas {
+    font-family: 'Inter', sans-serif;
+    background-color: #2C3E50;
+    background-image: linear-gradient(135deg, #2C3E50 0%, #1c2833 100%);
+    color: #f8f9fa;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.carta-reglas {
+    background-color: #34495e;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.titulos-reglas {
+    color: #FFD700;
+    border-bottom: 2px solid #FFD700;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.list-group-item {
+    background-color: transparent;
+    color: #f8f9fa;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-back {
+    background-color: #c0392b;
+    border-color: #c0392b;
+    transition: background-color 0.3s;
+}
+
+.btn-back:hover {
+    background-color: #a33023;
+}
