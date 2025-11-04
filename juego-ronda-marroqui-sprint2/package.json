@@ -1,0 +1,35 @@
+{
+  "name": "ronda-marroqui-backend",
+  "version": "2.0.0",
+  "description": "Backend para el juego Ronda Marroquí - Sprint 2",
+  "main": "src/backend/server.js",
+  "scripts": {
+    "start": "node src/backend/server.js",
+    "dev": "nodemon src/backend/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ronda",
+    "marroqui",
+    "card-game",
+    "spanish-deck",
+    "mysql",
+    "express"
+  ],
+  "author": "Sprint 2 Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mysql2": "^3.6.0",
+    "bcrypt": "^5.1.1",
+    "express-session": "^1.17.3",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}
