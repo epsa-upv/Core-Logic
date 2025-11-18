@@ -4,6 +4,9 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
+const express = require('express');
+const torneoRoutes = require('./routes/torneoRoutes'); // Importa el nuevo archivo de rutas
+app.use('/api/torneo', torneoRoutes);
 const app = express();
 const PORT = 3002;
 const dbConfig = {
