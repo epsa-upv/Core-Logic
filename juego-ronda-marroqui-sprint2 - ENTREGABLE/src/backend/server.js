@@ -5,7 +5,7 @@ const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
 const express = require('express');
-const torneoRoutes = require('./routes/torneoRoutes'); // Importa el nuevo archivo de rutas
+const torneoRoutes = require('../torneoRoutes'); 
 app.use('/api/torneo', torneoRoutes);
 const app = express();
 const PORT = 3002;
@@ -18,6 +18,7 @@ const dbConfig = {
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
+    
 };
 const pool = mysql.createPool(dbConfig);
 app.use(cors({
@@ -364,3 +365,8 @@ process.on('uncaughtException', (error) => {
 process.on('unhandledRejection', (error) => {
     console.error('❌ Promesa rechazada:', error);
 });
+router.post('/crear', torneoController.crearTorneo); 
+router.get('/activos', torneoController.listarTorneosActivos); 
+router.get('/:id', torneoController.obtenerTorneo); 
+router.post('/:id/inscribir', torneoController.inscribirUsuario); 
+module.exports = router;
