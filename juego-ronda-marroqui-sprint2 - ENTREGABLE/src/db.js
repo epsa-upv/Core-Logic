@@ -5,7 +5,7 @@ const pool = mysql.createPool({
     host: 'localhost',
     user: 'ronda_user',
     password: 'ronda_password',
-    database: 'ronda_db',
+    database: 'ronda_marroqui',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0

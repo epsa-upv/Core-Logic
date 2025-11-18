@@ -4,9 +4,7 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
-const express = require('express');
 const torneoRoutes = require('../torneoRoutes'); 
-app.use('/api/torneo', torneoRoutes);
 const app = express();
 const PORT = 3002;
 const dbConfig = {
@@ -21,6 +19,7 @@ const dbConfig = {
     
 };
 const pool = mysql.createPool(dbConfig);
+app.use('/api/torneo', torneoRoutes);
 app.use(cors({
     origin: 'http://localhost:3002',
     credentials: true
@@ -365,8 +364,4 @@ process.on('uncaughtException', (error) => {
 process.on('unhandledRejection', (error) => {
     console.error('❌ Promesa rechazada:', error);
 });
-router.post('/crear', torneoController.crearTorneo); 
-router.get('/activos', torneoController.listarTorneosActivos); 
-router.get('/:id', torneoController.obtenerTorneo); 
-router.post('/:id/inscribir', torneoController.inscribirUsuario); 
 module.exports = router;

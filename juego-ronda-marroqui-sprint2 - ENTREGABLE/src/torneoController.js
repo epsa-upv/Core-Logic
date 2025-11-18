@@ -118,7 +118,7 @@ exports.inscribirUsuario = async (req, res) => {
             return res.status(400).json({ success: false, message: `Ya estás inscrito en el torneo activo: ${activeTorneos[0].nombre}` });
         }
         
-        const insertSql = 'INSERT INTO Clasificacion_Torneo (id_torneo, id_usuario, puntuacion) VALUES (?, ?, 0)';
+        const insertSql = 'INSERT INTO Clasificacion_Torneo (id_torneo, id_usuario, puntos) VALUES (?, ?, 0)';
         await connection.query(insertSql, [id_torneo, id_usuario]);
 
         await connection.commit();
@@ -137,7 +137,7 @@ exports.obtenerTorneo = async (req, res) => {
     const id_torneo = req.params.id;
 
     try {
-        const [torneo] = await db.query('SELECT * FROM Torneo WHERE id_torneo = ?', [id_torneo]);
+        const torneo = await db.query('SELECT * FROM Torneo WHERE id_torneo = ?', [id_torneo]);
         if (torneo.length === 0) {
             return res.status(404).json({ success: false, message: "Torneo no encontrado." });
         }
@@ -148,8 +148,7 @@ exports.obtenerTorneo = async (req, res) => {
             SELECT 
                 ct.id_usuario,
                 u.nombre_usuario,
-                ct.puntuacion,
-                ct.posicion,
+                ct.puntos,
                 COUNT(p.id_partida) AS partidas_jugadas,
                 SUM(CASE WHEN p.id_ganador = ct.id_usuario THEN 1 ELSE 0 END) AS partidas_ganadas
             FROM Clasificacion_Torneo ct
@@ -158,11 +157,12 @@ exports.obtenerTorneo = async (req, res) => {
                 AND (p.id_ganador = ct.id_usuario OR p.id_perdedor = ct.id_usuario)
             WHERE ct.id_torneo = ?
             GROUP BY ct.id_usuario
-            ORDER BY ct.puntuacion DESC, partidas_ganadas DESC;
+            ORDER BY ct.puntos DESC, partidas_ganadas DESC;
         `, [id_torneo]);
         
         const partidas = await db.query('SELECT id_partida, estado, fecha_inicio, id_ganador FROM Partida WHERE id_torneo = ?', [id_torneo]);
 
+        console.log('torneoData:', torneoData);
         return res.status(200).json({
             success: true,
             torneo: {
@@ -200,5 +200,53 @@ exports.listarTorneosActivos = async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).json({ success: false, message: "Error interno del servidor al listar los torneos." });
+    }
+};
+
+// Obtener la clasificación de un torneo
+exports.obtenerClasificacionTorneo = async (req, res) => {
+    const id_torneo = req.params.id;
+    try {
+        const clasificacion = await db.query(`
+            SELECT 
+                ct.id_usuario,
+                u.nombre_usuario,
+                ct.puntos AS puntos
+            FROM Clasificacion_Torneo ct
+            JOIN Usuario u ON ct.id_usuario = u.id_usuario
+            WHERE ct.id_torneo = ?
+            ORDER BY ct.puntos DESC
+        `, [id_torneo]);
+        return res.status(200).json({
+            success: true,
+            clasificacion
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: "Error al obtener la clasificación del torneo." });
+    }
+};
+
+// Obtener todas las clasificaciones de un usuario en diferentes torneos
+exports.obtenerClasificacionesPorUsuario = async (req, res) => {
+    const id_usuario = req.params.id_usuario;
+    try {
+        const clasificaciones = await db.query(`
+            SELECT 
+                ct.id_torneo,
+                t.nombre AS nombre_torneo,
+                ct.puntos AS puntos
+            FROM Clasificacion_Torneo ct
+            JOIN Torneo t ON ct.id_torneo = t.id_torneo
+            WHERE ct.id_usuario = ?
+            ORDER BY ct.puntos DESC
+        `, [id_usuario]);
+        return res.status(200).json({
+            success: true,
+            clasificaciones
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: "Error al obtener las clasificaciones del usuario." });
     }
 };

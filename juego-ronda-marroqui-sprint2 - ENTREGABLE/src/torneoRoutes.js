@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const torneoController = require('torneoController');
+const torneoController = require('./torneoController');
 
 const authMiddleware = (req, res, next) => {
     // Aquí iría tu lógica para verificar si el usuario está autenticado
@@ -16,12 +16,16 @@ const authMiddleware = (req, res, next) => {
 router.post('/crear', authMiddleware, torneoController.crearTorneo);
 
 
-router.post('/:id/inscribir', authMiddleware, torneoController.inscribirParticipante);
+router.post('/:id/inscribir', authMiddleware, torneoController.inscribirUsuario);
 
 
-router.get('/:id', torneoController.obtenerDetalleTorneo);
+router.get('/:id', torneoController.obtenerTorneo);
 
 
 router.get('/activos', torneoController.listarTorneosActivos);
+
+router.get('/usuario/:id_usuario/clasificaciones', torneoController.obtenerClasificacionesPorUsuario);
+
+router.get('/:id/clasificacion', torneoController.obtenerClasificacionTorneo);
 
 module.exports = router;
