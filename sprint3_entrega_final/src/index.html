@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ronda Marroquí - Tablero de Juego</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <section class="hero-banner text-light">
+        <div class="container hero-inner">
+            <div class="hero-copy">
+                <span class="badge hero-badge">Juego de cartas digital</span>
+                <h1 class="hero-title">Ronda Marroquí</h1>
+                <p class="hero-subtitle">El favorito de los cafés de Casablanca ahora vive online. Domina las cartas especiales, reta a jugadores en tiempo real y escala posiciones en una comunidad global que no duerme.</p>
+                <div class="hero-actions">
+                    <button class="btn btn-light btn-lg shadow-sm me-3" type="button">
+                        <i class="fas fa-play me-2"></i>Jugar ahora
+                    </button>
+                    <button class="btn btn-outline-light btn-lg" type="button">
+                        <i class="fas fa-book-open me-2"></i>Aprende a jugar
+                    </button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-chip">
+                        <i class="fas fa-users"></i>
+                        <span>4 jugadores</span>
+                    </div>
+                    <div class="stat-chip">
+                        <i class="fas fa-layer-group"></i>
+                        <span>5 cartas por jugador</span>
+                    </div>
+                    <div class="stat-chip">
+                        <i class="fas fa-bolt"></i>
+                        <span>Cartas especiales activas</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-highlight">
+                <div class="hero-ticker">
+                    <p class="ticker-title">Mesa en vivo</p>
+                    <ul class="ticker-list">
+                        <li><span class="badge bg-success me-2">Ronda</span>Jugador 2 perfila respuesta estratégica</li>
+                        <li><span class="badge bg-warning me-2">Destacada</span>Último descarte: 7 de copas · cambio de palo</li>
+                        <li><span class="badge bg-info me-2">Estado</span>Flujo horario estable · sin penalizaciones</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="container-fluid game-container">
+        <header class="game-header py-4 shadow-sm">
+            <div class="container">
+                <div class="header-content">
+                    <div class="header-text">
+                        <h2 class="game-title">
+                            Partida en Vivo - Ronda Marroquí
+                        </h2>
+                        <p class="game-subtitle mb-0" id="partidaSubtitle">Cargando información de la partida...</p>
+                    </div>
+                    <div class="header-cta">
+                        <button onclick="window.location.href='profile.html'" class="btn btn-primary" type="button">
+                            <i class="fas fa-user-circle me-2"></i>Mi Perfil
+                        </button>
+                        <button onclick="window.location.href='torneos.html'" class="btn btn-warning" type="button">
+                            <i class="fas fa-trophy me-2"></i>Torneos
+                        </button>
+                        <button onclick="window.location.href='sala-espera.html'" class="btn btn-outline-light" type="button">
+                            <i class="fas fa-door-open me-2"></i>Sala de Espera
+                        </button>
+                        <small class="header-status"><i class="fas fa-circle text-success me-2"></i>Conectado</small>
+                    </div>
+                </div>
+                <div class="header-meta" id="partidaMeta">
+                    <span class="header-chip"><i class="fas fa-users me-2"></i><span id="numJugadores">-</span> jugadores</span>
+                    <span class="header-chip"><i class="fas fa-layer-group me-2"></i><span id="numCartas">-</span> cartas iniciales</span>
+                    <span class="header-chip"><i class="fas fa-calendar me-2"></i>Iniciada: <span id="fechaInicio">-</span></span>
+                    <span class="header-chip"><i class="fas fa-hashtag me-2"></i>Partida #<span id="idPartida">-</span></span>
+                </div>
+            </div>
+        </header>
+        <div class="game-shell">
+            <div class="game-board">
+                <div class="opponents-top row justify-content-center mb-4">
+                    <div class="col-md-4 text-center">
+                        <div class="player-info opponent">
+                            <div class="player-name">
+                                <i class="fas fa-user-circle me-2"></i>
+                                Jugador 3
+                            </div>
+                            <div class="player-cards-count">
+                                <i class="fas fa-layer-group me-2"></i>
+                                5 cartas
+                            </div>
+                            <div class="opponent-hand mt-2">
+                                <img src="lib/img/reverso.png" alt="Carta oculta" class="card-img opponent-card">
+                                <img src="lib/img/reverso.png" alt="Carta oculta" class="card-img opponent-card">
+                                <img src="lib/img/reverso.png" alt="Carta oculta" class="card-img opponent-card">
+                                <img src="lib/img/reverso.png" alt="Carta oculta" class="card-img opponent-card">
+                                <img src="lib/img/reverso.png" alt="Carta oculta" class="card-img opponent-card">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="player-info opponent current-turn">
+                            <div class="player-name">
+                                <i class="fas fa-user-circle me-2"></i>
+                                Jugador 2
+                                <span class="badge bg-success ms-2">Turno Actual</span>
+                            </div>
+                            <div class="player-cards-count">
+                                <i class="fas fa-layer-group me-2"></i>
+                                5 cartas
+                            </div>
+                            <div class="opponent-hand mt-2">
+                                <img src="lib/img/reverso.png" alt="Carta oculta" class="card-img opponent-card">
+                                <img src="lib/img/reverso.png" alt="Carta oculta" class="card-img opponent-card">
+                                <img src="lib/img/reverso.png" alt="Carta oculta" class="card-img opponent-card">
+                                <img src="lib/img/reverso.png" alt="Carta oculta" class="card-img opponent-card">
+                                <img src="lib/img/reverso.png" alt="Carta oculta" class="card-img opponent-card">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="player-info opponent">
+                            <div class="player-name">
+                                <i class="fas fa-user-circle me-2"></i>
+                                Jugador 4
+                            </div>
+                            <div class="player-cards-count">
+                                <i class="fas fa-layer-group me-2"></i>
+                                5 cartas
+                            </div>
+                            <div class="opponent-hand mt-2">
+                                <img src="lib/img/reverso.png" alt="Carta oculta" class="card-img opponent-card">
+                                <img src="lib/img/reverso.png" alt="Carta oculta" class="card-img opponent-card">
+                                <img src="lib/img/reverso.png" alt="Carta oculta" class="card-img opponent-card">
+                                <img src="lib/img/reverso.png" alt="Carta oculta" class="card-img opponent-card">
+                                <img src="lib/img/reverso.png" alt="Carta oculta" class="card-img opponent-card">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="center-area row justify-content-center align-items-center my-4">
+                    <div class="col-auto text-center">
+                        <div class="deck-container glass-card">
+                            <div class="deck-label mb-2">
+                                <i class="fas fa-layer-group me-2"></i>
+                                Mazo de Robo
+                            </div>
+                            <div class="deck-stack">
+                                <img src="lib/img/reverso.png" alt="Mazo de robo" class="card-img deck-card">
+                            </div>
+                            <div class="cards-count mt-2">
+                                <span class="badge bg-primary">19 cartas</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="direction-indicator">
+                            <i class="fas fa-arrow-right fa-3x text-warning"></i>
+                            <div class="mt-2">
+                                <small class="text-muted">Dirección: Horario</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto text-center">
+                        <div class="discard-container glass-card">
+                            <div class="discard-label mb-2">
+                                <i class="fas fa-clone me-2"></i>
+                                Pila de Descarte
+                            </div>
+                            <div class="discard-pile">
+                                <img src="lib/img/07-copas.png" alt="7 de copas" class="card-img discard-card">
+                            </div>
+                            <div class="cards-count mt-2">
+                                <span class="badge bg-danger">1 carta</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="player-area">
+                    <div class="player-info current-player">
+                        <div class="player-name text-center mb-3">
+                            <h4>
+                                <i class="fas fa-user-circle me-2"></i>
+                                Jugador 1 (Tú)
+                                <span class="badge bg-info ms-2">5 cartas</span>
+                            </h4>
+                        </div>
+                        <div class="player-hand d-flex justify-content-center flex-wrap gap-3">
+                            <div class="player-card-container">
+                                <img src="lib/img/03-oros.png" alt="3 de oros" class="card-img player-card">
+                            </div>
+                            <div class="player-card-container">
+                                <img src="lib/img/07-copas.png" alt="7 de copas" class="card-img player-card special-card">
+                                <div class="special-badge">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                            <div class="player-card-container">
+                                <img src="lib/img/12-espadas.png" alt="12 de espadas" class="card-img player-card">
+                            </div>
+                            <div class="player-card-container">
+                                <img src="lib/img/02-bastos.png" alt="2 de bastos" class="card-img player-card special-card">
+                                <div class="special-badge">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                            <div class="player-card-container">
+                                <img src="lib/img/05-copas.png" alt="5 de copas" class="card-img player-card">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <aside class="insights-panel" aria-label="Panel de apoyo">
+                <div class="panel-icon-grid" role="tablist" aria-label="Selector de información">
+                    <button class="panel-icon-button active" type="button" id="tab-guide" data-target="panel-guide" aria-controls="panel-guide" aria-expanded="true">
+                        <i class="fas fa-compass"></i>
+                        <span>Guía</span>
+                    </button>
+                    <button class="panel-icon-button" type="button" id="tab-metrics" data-target="panel-metrics" aria-controls="panel-metrics" aria-expanded="false">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Resumen</span>
+                    </button>
+                    <button class="panel-icon-button" type="button" id="tab-log" data-target="panel-log" aria-controls="panel-log" aria-expanded="false">
+                        <i class="fas fa-history"></i>
+                        <span>Bitácora</span>
+                    </button>
+                    <button class="panel-icon-button" type="button" id="tab-glossary" data-target="panel-glossary" aria-controls="panel-glossary" aria-expanded="false">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Glosario</span>
+                    </button>
+                </div>
+                <div class="panel-content">
+                    <section class="panel-section active" id="panel-guide" data-panel role="tabpanel" aria-labelledby="tab-guide">
+                        <h3 class="panel-title"><i class="fas fa-compass me-2"></i>Guía express</h3>
+                        <ul class="panel-list">
+                            <li><span class="dot dot-primary"></span>Mira la ruleta central para seguir el flujo del turno.</li>
+                            <li><span class="dot dot-warning"></span>Las cartas con estrella son especiales y alteran el ritmo.</li>
+                            <li><span class="dot dot-danger"></span>La pila de descarte revela la carta que se debe seguir.</li>
+                        </ul>
+                    </section>
+                    <section class="panel-section" id="panel-metrics" data-panel role="tabpanel" aria-labelledby="tab-metrics">
+                        <h3 class="panel-title"><i class="fas fa-chart-pie me-2"></i>Resumen rápido</h3>
+                        <div class="panel-metrics">
+                            <div class="metric-card">
+                                <span class="metric-label">Cartas visibles</span>
+                                <span class="metric-value">5</span>
+                                <small class="metric-foot">Tu mano completa</small>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Mazo restante</span>
+                                <span class="metric-value">19</span>
+                                <small class="metric-foot">Listo para reciclar</small>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Especiales activas</span>
+                                <span class="metric-value">2</span>
+                                <small class="metric-foot">Carta 7 y carta 2</small>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="panel-section" id="panel-log" data-panel role="tabpanel" aria-labelledby="tab-log">
+                        <h3 class="panel-title"><i class="fas fa-history me-2"></i>Bitácora visual</h3>
+                        <ol class="panel-timeline">
+                            <li><span>Jugador 1</span> abre la ronda con 3 de oros.</li>
+                            <li><span>Jugador 2</span> responde con 7 de copas (elige palo).</li>
+                            <li><span>Jugador 3</span> mantiene la calma (sin jugar).</li>
+                            <li><span>Jugador 4</span> prepara contraataque.</li>
+                        </ol>
+                    </section>
+                    <section class="panel-section glass-card soft-highlight" id="panel-glossary" data-panel role="tabpanel" aria-labelledby="tab-glossary">
+                        <h3 class="panel-title"><i class="fas fa-graduation-cap me-2"></i>Glosario express</h3>
+                        <dl class="glossary">
+                            <div class="glossary-item">
+                                <dt>Meqra3</dt>
+                                <dd>El último jugador con cartas; recibe la broma final.</dd>
+                            </div>
+                            <div class="glossary-item">
+                                <dt>Acumulación</dt>
+                                <dd>Un efecto que crece cuando se encadenan cartas especiales iguales.</dd>
+                            </div>
+                            <div class="glossary-item">
+                                <dt>Palo</dt>
+                                <dd>Familia de cartas: oros, copas, espadas o bastos.</dd>
+                            </div>
+                        </dl>
+                    </section>
+                </div>
+            </aside>
+        </div>
+        <section class="special-legend mt-5">
+            <h3 class="legend-title text-center text-light mb-4">
+                <i class="fas fa-star me-2"></i>
+                Cartas especiales destacadas
+            </h3>
+            <div class="legend-grid">
+                <div class="legend-card glass-card">
+                    <span class="legend-icon bg-danger"><i class="fas fa-burst"></i></span>
+                    <h4>As · Roba 3</h4>
+                    <p>El siguiente jugador recibe tres cartas o defiende con otro as. Es la carta favorita para romper combos y recuperar control.</p>
+                </div>
+                <div class="legend-card glass-card">
+                    <span class="legend-icon bg-warning"><i class="fas fa-forward"></i></span>
+                    <h4>Dos · Roba 2</h4>
+                    <p>Versátil y siempre presente en los mazos competitivos. Dos seguidos acumulan castigo inmediato.</p>
+                </div>
+                <div class="legend-card glass-card">
+                    <span class="legend-icon bg-info"><i class="fas fa-sync"></i></span>
+                    <h4>Cuatro · Salta turno</h4>
+                    <p>Perfecto para cortar ofensivas y cambiar el ritmo. Encadenar cuatros hará que varios jugadores pierdan su turno.</p>
+                </div>
+                <div class="legend-card glass-card">
+                    <span class="legend-icon bg-success"><i class="fas fa-leaf"></i></span>
+                    <h4>Siete · Cambia de palo</h4>
+                    <p>La carta comodín por excelencia. Cambia el palo y mantiene tu ventaja sobre la pila sin perder iniciativa.</p>
+                </div>
+            </div>
+        </section>
+        <footer class="game-footer py-5 mt-5">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h4 class="footer-title">Ronda Marroquí</h4>
+                    <p>Juego de cartas digital inspirado en la tradición magrebí. Sesiones multijugador clasificadas, temporadas competitivas y torneos semanales en streaming.</p>
+                    <div class="footer-social">
+                        <a href="#" aria-label="Discord"><i class="fab fa-discord"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h5 class="footer-title">Soporte</h5>
+                    <ul class="footer-list">
+                        <li><a href="#">Centro de ayuda</a></li>
+                        <li><a href="#">Estado de servidores</a></li>
+                        <li><a href="#">Reporte de incidencias</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h5 class="footer-title">Comunidad</h5>
+                    <ul class="footer-list">
+                        <li><a href="#">Calendario de torneos</a></li>
+                        <li><a href="#">Guía para creadores</a></li>
+                        <li><a href="#">Programa de embajadores</a></li>
+                    </ul>
+                </div>
+                <div class="footer-newsletter">
+                    <h5 class="footer-title">Boletín estratégico</h5>
+                    <p>Recibe aperturas recomendadas, balance de cartas y recompensas exclusivas cada semana.</p>
+                    <button class="btn btn-outline-light btn-sm" type="button">
+                        <i class="fas fa-envelope-open me-2"></i>Suscribirme
+                    </button>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <small>© 2025 Mesa Atlas S.L. Todos los derechos reservados.</small>
+                <small><a href="#">Política de privacidad</a> · <a href="#">Términos de servicio</a></small>
+            </div>
+        </footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="RondaGame.js"></script>
+    <script>
+        let partidaId = null;
+        let usuarioActual = null;
+        let estadoPartida = null;
+        let miIndiceJugador = -1;
+
+        async function verificarSesion() {
+            try {
+                const response = await fetch('/api/session', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (!data.success) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                usuarioActual = data.user;
+                inicializarPartida();
+            } catch (error) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        function inicializarPartida() {
+            const urlParams = new URLSearchParams(window.location.search);
+            partidaId = urlParams.get('partida');
+            
+            if (!partidaId) {
+                window.location.href = 'sala-espera.html';
+                return;
+            }
+            
+            cargarEstadoPartida();
+            setInterval(cargarEstadoPartida, 3000);
+        }
+
+        async function cargarEstadoPartida() {
+            if (!partidaId) return;
+            
+            try {
+                const response = await fetch(`/api/partida/${partidaId}`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    estadoPartida = data.partida;
+                    
+                    actualizarHeaderInfo();
+                    
+                    if (estadoPartida.estado === 'esperando_jugadores') {
+                        mostrarPantallaEspera();
+                    } else if (estadoPartida.estado === 'guardada') {
+                        mostrarPantallaPartidaGuardada();
+                    } else if (estadoPartida.estado === 'en_curso') {
+                        ocultarPantallaEspera();
+                        actualizarInterfaz();
+                    } else if (estadoPartida.estado === 'terminada') {
+                        mostrarFinDePartida();
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar estado:', error);
+            }
+        }
+
+        function actualizarHeaderInfo() {
+            if (!estadoPartida) return;
+            
+            document.getElementById('idPartida').textContent = estadoPartida.id_partida || '-';
+            document.getElementById('numCartas').textContent = estadoPartida.cartas_iniciales || '-';
+            
+            const jugadores = estadoPartida.jugadores || [];
+            const maxJugadores = estadoPartida.max_jugadores || jugadores.length;
+            document.getElementById('numJugadores').textContent = `${jugadores.length}/${maxJugadores}`;
+            
+            if (estadoPartida.fecha_inicio) {
+                const fecha = new Date(estadoPartida.fecha_inicio);
+                const horas = fecha.getHours().toString().padStart(2, '0');
+                const minutos = fecha.getMinutes().toString().padStart(2, '0');
+                document.getElementById('fechaInicio').textContent = `${horas}:${minutos}`;
+            }
+            
+            const subtitle = document.getElementById('partidaSubtitle');
+            if (estadoPartida.estado === 'esperando_jugadores') {
+                subtitle.textContent = `Esperando jugadores (${jugadores.length}/${maxJugadores})`;
+            } else if (estadoPartida.estado === 'en_curso') {
+                const turnoActual = estadoPartida.estado_juego?.players[estadoPartida.estado_juego?.currentPlayer]?.name || 'Jugador';
+                subtitle.textContent = `En juego - Turno de ${turnoActual}`;
+            } else if (estadoPartida.estado === 'guardada') {
+                subtitle.textContent = 'Partida guardada - Lista para reanudar';
+            } else if (estadoPartida.estado === 'terminada') {
+                subtitle.textContent = 'Partida finalizada';
+            }
+        }
+
+        function mostrarPantallaEspera() {
+            if (!estadoPartida) return;
+            
+            const gameBoard = document.querySelector('.game-board');
+            
+            const jugadores = estadoPartida.jugadores || [];
+            const maxJugadores = estadoPartida.max_jugadores || 4;
+            const slotsVacios = maxJugadores - jugadores.length;
+            
+            gameBoard.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="card mx-auto" style="max-width: 600px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                        <div class="card-body">
+                            <h2 class="text-white mb-4">
+                                <i class="fas fa-clock me-3"></i>
+                                Esperando Jugadores
+                            </h2>
+                            <p class="text-white-50 mb-4">La partida comenzara automaticamente cuando se unan todos los jugadores</p>
+                            
+                            <div class="mb-4">
+                                <h4 class="text-white mb-3">Jugadores (${jugadores.length}/${maxJugadores})</h4>
+                                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                    ${jugadores.map(j => `
+                                        <div class="jugador-chip" style="background: rgba(77, 142, 233, 0.2); border: 1px solid rgba(77, 142, 233, 0.4); padding: 8px 15px; border-radius: 20px; color: #4dabf7;">
+                                            <i class="fas fa-user me-1"></i>${j}
+                                        </div>
+                                    `).join('')}
+                                    ${Array(slotsVacios).fill(0).map(() => `
+                                        <div class="slot-vacio" style="background: rgba(255, 255, 255, 0.05); border: 1px dashed rgba(255, 255, 255, 0.2); padding: 8px 15px; border-radius: 20px; color: rgba(255, 255, 255, 0.4);">
+                                            <i class="fas fa-user-plus me-1"></i>Esperando...
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-outline-secondary" onclick="window.location.href='sala-espera.html'">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Volver a Sala de Espera
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function ocultarPantallaEspera() {
+            const gameBoard = document.querySelector('.game-board');
+            if (!gameBoard.querySelector('.opponents-top')) {
+                location.reload();
+            }
+        }
+
+        function mostrarPantallaPartidaGuardada() {
+            if (!estadoPartida) return;
+            
+            const gameBoard = document.querySelector('.game-board');
+            const jugadores = estadoPartida.jugadores || [];
+            
+            gameBoard.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="card mx-auto" style="max-width: 600px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                        <div class="card-body">
+                            <h2 class="text-white mb-4">
+                                <i class="fas fa-save me-3"></i>
+                                Partida Guardada
+                            </h2>
+                            <p class="text-white-50 mb-4">Esta partida fue guardada anteriormente</p>
+                            
+                            <div class="mb-4">
+                                <h4 class="text-white mb-3">Jugadores (${jugadores.length})</h4>
+                                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                    ${jugadores.map(j => `
+                                        <div class="jugador-chip" style="background: rgba(77, 142, 233, 0.2); border: 1px solid rgba(77, 142, 233, 0.4); padding: 8px 15px; border-radius: 20px; color: #4dabf7;">
+                                            <i class="fas fa-user me-1"></i>${j}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-success btn-lg mb-3" onclick="reanudarPartida()">
+                                <i class="fas fa-play me-2"></i>
+                                Reanudar Partida
+                            </button>
+                            
+                            <button class="btn btn-outline-secondary" onclick="window.location.href='sala-espera.html'">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Volver a Sala de Espera
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function reanudarPartida() {
+            try {
+                const response = await fetch(`/api/partida/${partidaId}/reanudar`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    cargarEstadoPartida();
+                } else {
+                    alert('Error al reanudar partida: ' + data.message);
+                }
+            } catch (error) {
+                alert('Error de conexion al reanudar partida');
+            }
+        }
+
+        function actualizarInterfaz() {
+            if (!estadoPartida) return;
+            
+            if (estadoPartida.estado === 'esperando_jugadores') {
+                return;
+            }
+            
+            if (!estadoPartida.estado_juego) return;
+            
+            const estado = estadoPartida.estado_juego;
+            
+            miIndiceJugador = estado.players.findIndex(p => p.id_usuario === usuarioActual.id_usuario);
+            
+            if (miIndiceJugador === -1) {
+                alert('No eres parte de esta partida');
+                window.location.href = 'sala-espera.html';
+                return;
+            }
+            
+            actualizarMiMano(estado.players[miIndiceJugador]);
+            actualizarOponentes(estado.players, estado.currentPlayer);
+            actualizarMazo(estado.deckCount);
+            actualizarPilaDescarte(estado.topCard, estado.discardCount);
+            actualizarDireccion(estado.gameDirection);
+            
+            if (estado.isGameOver) {
+                mostrarFinDePartida();
+            }
+        }
+
+        function actualizarMiMano(jugador) {
+            const manoContainer = document.querySelector('.player-hand');
+            const nombreJugador = document.querySelector('.current-player .player-name h4');
+            
+            nombreJugador.innerHTML = `
+                <i class="fas fa-user-circle me-2"></i>
+                ${jugador.name} (Tú)
+                <span class="badge bg-info ms-2">${jugador.cardsCount} cartas</span>
+            `;
+            
+            manoContainer.innerHTML = jugador.hand.map(carta => {
+                const esEspecial = [1, 2, 4, 7].includes(carta.value);
+                return `
+                    <div class="player-card-container" onclick="jugarCarta(${carta.value}, '${carta.suit}')">
+                        <img src="${carta.image}" alt="${carta.value} de ${carta.suit}" class="card-img player-card ${esEspecial ? 'special-card' : ''}">
+                        ${esEspecial ? '<div class="special-badge"><i class="fas fa-star"></i></div>' : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function actualizarOponentes(jugadores, turnoActual) {
+            const oponentesContainer = document.querySelector('.opponents-top');
+            const otrosJugadores = jugadores.filter((_, idx) => idx !== miIndiceJugador);
+            
+            oponentesContainer.innerHTML = otrosJugadores.map(jugador => {
+                const esTurnoActual = jugadores[turnoActual].id === jugador.id;
+                return `
+                    <div class="col-md-4 text-center">
+                        <div class="player-info opponent ${esTurnoActual ? 'current-turn' : ''}">
+                            <div class="player-name">
+                                <i class="fas fa-user-circle me-2"></i>
+                                ${jugador.name}
+                                ${esTurnoActual ? '<span class="badge bg-success ms-2">Turno Actual</span>' : ''}
+                            </div>
+                            <div class="player-cards-count">
+                                <i class="fas fa-layer-group me-2"></i>
+                                ${jugador.cardsCount} cartas
+                            </div>
+                            <div class="opponent-hand mt-2">
+                                ${Array(jugador.cardsCount).fill('<img src="lib/img/reverso.png" alt="Carta oculta" class="card-img opponent-card">').join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function actualizarMazo(cantidadCartas) {
+            const mazoContainer = document.querySelector('.deck-container .cards-count');
+            mazoContainer.innerHTML = `<span class="badge bg-primary">${cantidadCartas} cartas</span>`;
+        }
+
+        function actualizarPilaDescarte(cartaSuperior, cantidadCartas) {
+            if (!cartaSuperior) return;
+            
+            const pilaContainer = document.querySelector('.discard-pile');
+            const contadorContainer = document.querySelector('.discard-container .cards-count');
+            
+            pilaContainer.innerHTML = `<img src="${cartaSuperior.image}" alt="${cartaSuperior.value} de ${cartaSuperior.suit}" class="card-img discard-card">`;
+            contadorContainer.innerHTML = `<span class="badge bg-danger">${cantidadCartas} cartas</span>`;
+        }
+
+        function actualizarDireccion(direccion) {
+            const direccionContainer = document.querySelector('.direction-indicator');
+            const icono = direccion === 1 ? 'fa-arrow-right' : 'fa-arrow-left';
+            const texto = direccion === 1 ? 'Horario' : 'Antihorario';
+            
+            direccionContainer.innerHTML = `
+                <i class="fas ${icono} fa-3x text-warning"></i>
+                <div class="mt-2">
+                    <small class="text-muted">Direccion: ${texto}</small>
+                </div>
+            `;
+        }
+
+        async function jugarCarta(valor, palo) {
+            if (!estadoPartida || !estadoPartida.estado_juego) return;
+            
+            const turnoActual = estadoPartida.estado_juego.currentPlayer;
+            if (turnoActual !== miIndiceJugador) {
+                alert('No es tu turno');
+                return;
+            }
+            
+            let paloElegido = null;
+            if (valor === 7) {
+                paloElegido = prompt('Elige un palo (oros, copas, espadas, bastos):');
+                if (!paloElegido || !['oros', 'copas', 'espadas', 'bastos'].includes(paloElegido)) {
+                    alert('Palo invalido');
+                    return;
+                }
+            }
+            
+            try {
+                const response = await fetch(`/api/partida/${partidaId}/movimiento`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        id_usuario: usuarioActual.id_usuario,
+                        tipo_movimiento: 'jugar',
+                        carta_jugada: `${valor}_${palo}`,
+                        palo_elegido: paloElegido
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.ganador) {
+                        alert('Partida finalizada');
+                    }
+                    cargarEstadoPartida();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('Error de conexion');
+            }
+        }
+
+        async function robarCarta() {
+            if (!estadoPartida || !estadoPartida.estado_juego) return;
+            
+            const turnoActual = estadoPartida.estado_juego.currentPlayer;
+            if (turnoActual !== miIndiceJugador) {
+                alert('No es tu turno');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/partida/${partidaId}/movimiento`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        id_usuario: usuarioActual.id_usuario,
+                        tipo_movimiento: 'robar'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    cargarEstadoPartida();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('Error de conexion');
+            }
+        }
+
+        function mostrarFinDePartida() {
+            alert('La partida ha finalizado');
+            window.location.href = 'sala-espera.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', verificarSesion);
+
+        document.querySelector('.deck-stack').addEventListener('click', robarCarta);
+    </script>
+</body>
+</html>
