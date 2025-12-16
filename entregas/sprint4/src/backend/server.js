@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
-const RondaGame = require('../RondaGame.js');
+const RondaGame = require('../models/RondaGame.js');
 const torneoController = require('./torneoController');
 const torneoRoutes = require('./torneoRoutes');
 
@@ -41,7 +41,7 @@ app.use(session({
 torneoController.initPool(pool);
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'welcome.html'));
+    res.sendFile(path.join(__dirname, '..', '../views/welcome.html'));
 });
 app.use(express.static(path.join(__dirname, '..')));
 app.use('/lib', express.static(path.join(__dirname, '..', '..', 'lib')));
