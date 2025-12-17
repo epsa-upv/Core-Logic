@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jugar vs Computadora - Ronda Marroquí</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .bot-selector-card {
+            background: linear-gradient(135deg, rgba(77, 142, 233, 0.1) 0%, rgba(52, 152, 219, 0.1) 100%);
+            border: 2px solid rgba(77, 142, 233, 0.4);
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 600px;
+            margin: 50px auto;
+        }
+        .difficulty-btn {
+            width: 100%;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+        .difficulty-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .difficulty-facil { background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%); }
+        .difficulty-normal { background: linear-gradient(135deg, #1890ff 0%, #40a9ff 100%); }
+        .difficulty-dificil { background: linear-gradient(135deg, #f5222d 0%, #ff4d4f 100%); }
+    </style>
+</head>
+<body>
+    <div class="container" style="min-height: 100vh; padding: 40px 20px;">
+        <div class="text-center mb-4">
+            <h1 class="text-white" style="font-size: 2.5rem; font-weight: 700;">
+                <i class="fas fa-robot me-3"></i>
+                Jugar vs Computadora
+            </h1>
+            <p class="text-white-50">Elige la configuración de tu partida</p>
+        </div>
+
+        <div class="bot-selector-card">
+            <form id="crearPartidaBotForm">
+                <div class="mb-4">
+                    <label class="form-label text-white">
+                        <i class="fas fa-robot me-2"></i>
+                        Número de Bots
+                    </label>
+                    <select class="form-select" id="numBots" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="1">1 Bot (2 jugadores)</option>
+                        <option value="2">2 Bots (3 jugadores)</option>
+                        <option value="3" selected>3 Bots (4 jugadores)</option>
+                        <option value="4">4 Bots (5 jugadores)</option>
+                        <option value="5">5 Bots (6 jugadores)</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-white">
+                        <i class="fas fa-layer-group me-2"></i>
+                        Cartas Iniciales
+                    </label>
+                    <select class="form-select" id="cartasIniciales" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="3">3 Cartas</option>
+                        <option value="4">4 Cartas</option>
+                        <option value="5" selected>5 Cartas</option>
+                        <option value="6">6 Cartas</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-white">
+                        <i class="fas fa-brain me-2"></i>
+                        Dificultad
+                    </label>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn difficulty-btn difficulty-facil" onclick="seleccionarDificultad('facil', this)">
+                            <i class="fas fa-smile me-2"></i>
+                            Fácil
+                            <br><small>El bot juega cartas aleatorias</small>
+                        </button>
+                        <button type="button" class="btn difficulty-btn difficulty-normal" onclick="seleccionarDificultad('normal', this)">
+                            <i class="fas fa-meh me-2"></i>
+                            Normal
+                            <br><small>El bot evita desperdiciar cartas especiales</small>
+                        </button>
+                        <button type="button" class="btn difficulty-btn difficulty-dificil" onclick="seleccionarDificultad('dificil', this)">
+                            <i class="fas fa-fire me-2"></i>
+                            Difícil
+                            <br><small>El bot juega estratégicamente</small>
+                        </button>
+                    </div>
+                    <input type="hidden" id="dificultad" value="normal">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 mt-4">
+                    <i class="fas fa-rocket me-2"></i>
+                    Iniciar Partida
+                </button>
+            </form>
+        </div>
+
+        <div class="text-center mt-4">
+            <button class="btn btn-outline-light" onclick="window.location.href='sala-espera.html'">
+                <i class="fas fa-arrow-left me-2"></i>
+                Volver a Sala de Espera
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let dificultadSeleccionada = 'normal';
+
+        async function verificarSesion() {
+            try {
+                const response = await fetch('/api/session', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (!data.success) {
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        function seleccionarDificultad(dificultad, buttonEl) {
+            dificultadSeleccionada = dificultad;
+            document.getElementById('dificultad').value = dificultad;
+            
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.style.opacity = '0.5';
+                btn.style.border = '2px solid transparent';
+            });
+            
+            const targetBtn = buttonEl || document.querySelector(`.difficulty-btn.difficulty-${dificultad}`);
+            if (targetBtn) {
+                targetBtn.style.opacity = '1';
+                targetBtn.style.border = '3px solid #fff';
+            }
+        }
+
+        document.getElementById('crearPartidaBotForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const numBots = parseInt(document.getElementById('numBots').value);
+            const cartasIniciales = parseInt(document.getElementById('cartasIniciales').value);
+            const dificultad = document.getElementById('dificultad').value;
+            
+            if (!numBots || !cartasIniciales) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creando partida...';
+            
+            try {
+                const response = await fetch('/api/partida/vs-bot/crear', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        num_bots: numBots,
+                        cartas_iniciales: cartasIniciales,
+                        dificultad: dificultad
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    window.location.href = `index.html?partida=${data.partida.id_partida}`;
+                } else {
+                    alert('Error al crear partida: ' + data.message);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-rocket me-2"></i>Iniciar Partida';
+                }
+            } catch (error) {
+                alert('Error de conexión al crear partida');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-rocket me-2"></i>Iniciar Partida';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            verificarSesion();
+            const btns = document.querySelectorAll('.difficulty-btn');
+            btns[1].style.border = '3px solid #fff';
+            btns.forEach((btn, index) => {
+                if (index !== 1) btn.style.opacity = '0.5';
+            });
+        });
+    </script>
+</body>
+</html>

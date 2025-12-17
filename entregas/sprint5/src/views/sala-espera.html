@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sala de Espera - Ronda Marroquí</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .sala-container {
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .sala-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .sala-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        .partida-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .partida-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(77, 142, 233, 0.5);
+            transform: translateY(-2px);
+        }
+        .partida-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .partida-nombre {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #fff;
+        }
+        .partida-estado {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .estado-esperando {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+        .estado-llena {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+        .partida-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .jugadores-lista {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        .jugador-chip {
+            background: rgba(77, 142, 233, 0.2);
+            border: 1px solid rgba(77, 142, 233, 0.4);
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: #4dabf7;
+            font-size: 0.9rem;
+        }
+        .slot-vacio {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+        }
+        .crear-partida-card {
+            background: linear-gradient(135deg, rgba(77, 142, 233, 0.1) 0%, rgba(52, 152, 219, 0.1) 100%);
+            border: 2px dashed rgba(77, 142, 233, 0.4);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .form-floating label {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #4dabf7;
+            color: #fff;
+            box-shadow: 0 0 0 0.25rem rgba(77, 142, 233, 0.25);
+        }
+        .form-select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+        .mis-partidas-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="sala-container">
+        <div class="container">
+            <div class="sala-header">
+                <h1 class="sala-title">
+                    <i class="fas fa-door-open me-3"></i>
+                    Sala de Espera
+                </h1>
+                <p class="text-white-50">Crea una nueva partida o unete a una existente</p>
+                
+                <div class="text-center mt-3 mb-4">
+                    <button onclick="window.location.href='vs-bot.html'" class="btn btn-success btn-lg me-3">
+                        <i class="fas fa-robot me-2"></i>Jugar vs Computadora
+                    </button>
+                    <button onclick="window.location.href='torneos.html'" class="btn btn-warning btn-lg me-3">
+                        <i class="fas fa-trophy me-2"></i>Ver Torneos
+                    </button>
+                    <button onclick="window.location.href='profile.html'" class="btn btn-outline-light btn-lg me-3">
+                        <i class="fas fa-user me-2"></i>Mi Perfil
+                    </button>
+                    <button onclick="window.location.href='welcome.html'" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-home me-2"></i>Inicio
+                    </button>
+                </div>
+            </div>
+
+            <div class="crear-partida-card">
+                <h3 class="text-white mb-4">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Crear Nueva Partida
+                </h3>
+                <form id="crearPartidaForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <select class="form-select" id="maxJugadores" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="2">2 Jugadores</option>
+                                    <option value="3">3 Jugadores</option>
+                                    <option value="4" selected>4 Jugadores</option>
+                                    <option value="5">5 Jugadores</option>
+                                    <option value="6">6 Jugadores</option>
+                                </select>
+                                <label for="maxJugadores">Numero de Jugadores</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <select class="form-select" id="cartasIniciales" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="3">3 Cartas</option>
+                                    <option value="4">4 Cartas</option>
+                                    <option value="5" selected>5 Cartas</option>
+                                    <option value="6">6 Cartas</option>
+                                </select>
+                                <label for="cartasIniciales">Cartas Iniciales</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <select class="form-select" id="visibilidadPartida" required>
+                                    <option value="publica" selected>Pública</option>
+                                    <option value="privada">Privada (con código)</option>
+                                </select>
+                                <label for="visibilidadPartida">Visibilidad</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12" id="codigoCreadoBox" style="display:none;">
+                            <div class="alert alert-info d-flex align-items-center justify-content-between mb-0">
+                                <div>
+                                    <i class="fas fa-key me-2"></i>
+                                    Código de acceso: <strong id="codigoCreadoTexto">...</strong>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-dark" onclick="copiarCodigoCreado()">
+                                    <i class="fas fa-copy me-1"></i>
+                                    Copiar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-rocket me-2"></i>
+                                Crear Partida
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="crear-partida-card mt-4">
+                <h3 class="text-white mb-4">
+                    <i class="fas fa-key me-2"></i>
+                    Unirse a Partida Privada
+                </h3>
+                <form id="unirsePrivadaForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input class="form-control" id="codigoAcceso" placeholder="Código" maxlength="12" required />
+                                <label for="codigoAcceso">Código de acceso</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-success btn-lg px-5">
+                                <i class="fas fa-door-open me-2"></i>
+                                Unirse
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="mis-partidas-header">
+                <h2 class="section-title">
+                    <i class="fas fa-users me-2"></i>
+                    Partidas Disponibles
+                </h2>
+                <button class="btn btn-outline-light" onclick="cargarDisponibles()">
+                    <i class="fas fa-sync-alt me-2"></i>
+                    Actualizar
+                </button>
+            </div>
+
+            <div id="disponiblesContainer">
+                <div class="empty-state">
+                    <i class="fas fa-hourglass-half"></i>
+                    <p>Cargando partidas...</p>
+                </div>
+            </div>
+
+            <div class="mis-partidas-header mt-5">
+                <h2 class="section-title">
+                    <i class="fas fa-list me-2"></i>
+                    Mis Partidas
+                </h2>
+                <button class="btn btn-outline-light" onclick="cargarMisPartidas()">
+                    <i class="fas fa-sync-alt me-2"></i>
+                    Actualizar
+                </button>
+            </div>
+
+            <div id="misPartidasContainer">
+                <div class="empty-state">
+                    <i class="fas fa-hourglass-half"></i>
+                    <p>Cargando partidas...</p>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button class="btn btn-outline-secondary" onclick="window.location.href='welcome.html'">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Volver al Inicio
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let usuarioActual = null;
+        let ultimoCodigoCreado = null;
+
+        function escapeHtml(value) {
+            if (value === null || value === undefined) return '';
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function sanitizarMensajeUsuario(mensaje) {
+            if (mensaje === null || mensaje === undefined) return '';
+            let texto = String(mensaje);
+
+            texto = texto.replace(/https?:\/\/[^\s)]+/gi, '');
+            texto = texto.replace(/\b(localhost|127\.0\.0\.1)(:\d+)?\b/gi, 'servidor');
+            texto = texto.replace(/\s{2,}/g, ' ').trim();
+
+            return texto || 'Ha ocurrido un error.';
+        }
+
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            const el = document.getElementById('appToast');
+            const body = document.getElementById('appToastBody');
+            if (!el || !body || !window.bootstrap) {
+                console.log(`[${tipo}] ${sanitizarMensajeUsuario(mensaje)}`);
+                return;
+            }
+
+            el.classList.remove('text-bg-success', 'text-bg-danger', 'text-bg-warning', 'text-bg-info');
+            el.classList.add(`text-bg-${tipo}`);
+            body.textContent = sanitizarMensajeUsuario(mensaje);
+
+            const toast = bootstrap.Toast.getOrCreateInstance(el, { delay: 3500 });
+            toast.show();
+        }
+
+        async function verificarSesion() {
+            try {
+                const response = await fetch('/api/session', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (!data.success) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                usuarioActual = data.user;
+                cargarDisponibles();
+                cargarMisPartidas();
+            } catch (error) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function cargarDisponibles() {
+            const container = document.getElementById('disponiblesContainer');
+            
+            try {
+                const response = await fetch('/api/partidas/disponibles', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success && data.partidas && data.partidas.length > 0) {
+                    container.innerHTML = data.partidas.map(partida => crearDisponibleCard(partida)).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No hay partidas disponibles</p>
+                            <small class="text-white-50">Crea una nueva partida para que otros puedan unirse</small>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="empty-state text-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error al cargar partidas</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function cargarMisPartidas() {
+            const container = document.getElementById('misPartidasContainer');
+            
+            try {
+                const response = await fetch('/api/partidas/mis-partidas', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success && data.partidas && data.partidas.length > 0) {
+                    container.innerHTML = data.partidas.map(partida => crearMisPartidasCard(partida)).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No tienes partidas activas</p>
+                            <small class="text-white-50">Crea una nueva partida o unete a una existente</small>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="empty-state text-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error al cargar partidas</p>
+                    </div>
+                `;
+            }
+        }
+
+        function crearDisponibleCard(partida) {
+            const jugadores = partida.jugadores ? partida.jugadores.split(', ') : [];
+            const slotsVacios = partida.max_jugadores - partida.jugadores_actuales;
+            const fechaInicio = new Date(partida.fecha_inicio).toLocaleString('es-ES');
+            
+            return `
+                <div class="partida-card">
+                    <div class="partida-header">
+                        <div class="partida-nombre">
+                            <i class="fas fa-gamepad me-2"></i>
+                            Partida #${partida.id_partida}
+                        </div>
+                        <span class="partida-estado estado-esperando">
+                            <i class="fas fa-clock me-1"></i>
+                            Esperando
+                        </span>
+                    </div>
+                    <div class="partida-info">
+                        <div class="info-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>${fechaInicio}</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-layer-group"></i>
+                            <span>${partida.cartas_iniciales} cartas iniciales</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-users"></i>
+                            <span>${partida.jugadores_actuales}/${partida.max_jugadores} jugadores</span>
+                        </div>
+                    </div>
+                    <div class="jugadores-lista">
+                        ${jugadores.map(j => `<div class="jugador-chip"><i class="fas fa-user me-1"></i>${escapeHtml(j)}</div>`).join('')}
+                        ${Array(slotsVacios).fill(0).map(() => `<div class="slot-vacio"><i class="fas fa-user-plus me-1"></i>Esperando...</div>`).join('')}
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary flex-grow-1" onclick="irALobby(${partida.id_partida})">
+                            <i class="fas fa-door-open me-2"></i>
+                            Entrar a Sala
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function crearMisPartidasCard(partida) {
+            const jugadores = partida.jugadores ? partida.jugadores.split(', ') : [];
+            const fechaInicio = new Date(partida.fecha_inicio).toLocaleString('es-ES');
+            const slotsVacios = partida.max_jugadores ? partida.max_jugadores - partida.jugadores_actuales : 0;
+            
+            let estadoBadge = '';
+            let estadoTexto = '';
+            
+            if (partida.estado === 'esperando_jugadores') {
+                estadoBadge = 'estado-esperando';
+                estadoTexto = 'Esperando Jugadores';
+            } else if (partida.estado === 'en_curso') {
+                estadoBadge = 'estado-esperando';
+                estadoTexto = 'En Curso';
+            } else if (partida.estado === 'guardada') {
+                estadoBadge = 'estado-esperando';
+                estadoTexto = 'Guardada';
+            } else if (partida.estado === 'terminada') {
+                estadoBadge = 'estado-llena';
+                estadoTexto = 'Terminada';
+            }
+            
+            return `
+                <div class="partida-card">
+                    <div class="partida-header">
+                        <div class="partida-nombre">
+                            <i class="fas fa-gamepad me-2"></i>
+                            Partida #${partida.id_partida}
+                            ${partida.es_privada ? `<span class="badge bg-secondary ms-2"><i class="fas fa-lock me-1"></i>Privada</span>` : `<span class="badge bg-success ms-2"><i class="fas fa-globe me-1"></i>Pública</span>`}
+                        </div>
+                        <span class="partida-estado ${estadoBadge}">
+                            <i class="fas fa-clock me-1"></i>
+                            ${estadoTexto}
+                        </span>
+                    </div>
+                    <div class="partida-info">
+                        <div class="info-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>${fechaInicio}</span>
+                        </div>
+                        ${partida.es_privada && partida.codigo_acceso ? `
+                            <div class="info-item">
+                                <i class="fas fa-key"></i>
+                                <span>Código: <strong>${escapeHtml(partida.codigo_acceso)}</strong></span>
+                            </div>
+                        ` : ''}
+                        <div class="info-item">
+                            <i class="fas fa-layer-group"></i>
+                            <span>${partida.cartas_iniciales} cartas iniciales</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-users"></i>
+                            <span>${partida.jugadores_actuales || jugadores.length} jugadores</span>
+                        </div>
+                    </div>
+                    <div class="jugadores-lista">
+                        ${jugadores.map(j => `<div class="jugador-chip"><i class="fas fa-user me-1"></i>${escapeHtml(j)}</div>`).join('')}
+                        ${partida.estado === 'esperando_jugadores' && slotsVacios > 0 ? 
+                            Array(slotsVacios).fill(0).map(() => `<div class="slot-vacio"><i class="fas fa-user-plus me-1"></i>Esperando...</div>`).join('') 
+                            : ''}
+                    </div>
+                    <div class="d-flex gap-2">
+                        ${partida.estado === 'en_curso' || partida.estado === 'guardada' ? `
+                            <button class="btn btn-success flex-grow-1" onclick="irAPartida(${partida.id_partida})">
+                                <i class="fas fa-play me-2"></i>
+                                Continuar Partida
+                            </button>
+                            ${partida.estado === 'en_curso' ? `
+                                <button class="btn btn-outline-warning" onclick="guardarPartida(${partida.id_partida})">
+                                    <i class="fas fa-save"></i>
+                                </button>
+                            ` : ''}
+                        ` : ''}
+                        ${partida.estado === 'esperando_jugadores' ? `
+                            <button class="btn btn-info flex-grow-1" onclick="irALobby(${partida.id_partida})">
+                                <i class="fas fa-door-open me-2"></i>
+                                Entrar a Sala
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        async function unirsePartida(idPartida) {
+            try {
+                const response = await fetch(`/api/partida/${idPartida}/unirse`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.partidaIniciada) {
+                        mostrarNotificacion('La partida ha comenzado', 'success');
+                        irAPartida(idPartida);
+                    } else {
+                        mostrarNotificacion('Te has unido. Esperando más jugadores...', 'success');
+                        cargarDisponibles();
+                        cargarMisPartidas();
+                    }
+                } else {
+                    mostrarNotificacion('Error al unirse: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                mostrarNotificacion('Error de conexión al unirse a la partida', 'danger');
+            }
+        }
+
+        async function cargarPartidas() {
+            cargarDisponibles();
+            cargarMisPartidas();
+        }
+
+        document.getElementById('crearPartidaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const maxJugadores = parseInt(document.getElementById('maxJugadores').value);
+            const cartasIniciales = parseInt(document.getElementById('cartasIniciales').value);
+            const visibilidad = document.getElementById('visibilidadPartida').value;
+            const esPrivada = visibilidad === 'privada';
+            
+            if (!maxJugadores || !cartasIniciales) {
+                mostrarNotificacion('Por favor completa todos los campos', 'warning');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/partida/crear', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        max_jugadores: maxJugadores,
+                        cartas_iniciales: cartasIniciales,
+                        id_torneo: null,
+                        es_privada: esPrivada
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.partida && data.partida.es_privada && data.partida.codigo_acceso) {
+                        ultimoCodigoCreado = data.partida.codigo_acceso;
+                        mostrarCodigoCreado(ultimoCodigoCreado);
+                        mostrarNotificacion('Partida privada creada. Comparte el código.', 'success');
+                    } else {
+                        ocultarCodigoCreado();
+                        mostrarNotificacion('Partida creada. Esperando jugadores...', 'success');
+                    }
+                    cargarDisponibles();
+                    cargarMisPartidas();
+                } else {
+                    mostrarNotificacion('Error al crear partida: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                mostrarNotificacion('Error de conexión al crear partida', 'danger');
+            }
+        });
+
+        document.getElementById('unirsePrivadaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const codigo = document.getElementById('codigoAcceso').value.trim();
+            if (!codigo) {
+                mostrarNotificacion('Introduce un código', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/partida/unirse-codigo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ codigo_acceso: codigo })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    if (data.partidaIniciada) {
+                        mostrarNotificacion('La partida ha comenzado', 'success');
+                        irAPartida(data.id_partida);
+                    } else {
+                        mostrarNotificacion('Te has unido. Entrando a la sala...', 'success');
+                        irALobby(data.id_partida);
+                    }
+                } else {
+                    mostrarNotificacion('Error: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                mostrarNotificacion('Error de conexión al unirse por código', 'danger');
+            }
+        });
+
+        function mostrarCodigoCreado(codigo) {
+            const box = document.getElementById('codigoCreadoBox');
+            const texto = document.getElementById('codigoCreadoTexto');
+            texto.textContent = codigo;
+            box.style.display = 'block';
+        }
+
+        function ocultarCodigoCreado() {
+            ultimoCodigoCreado = null;
+            const box = document.getElementById('codigoCreadoBox');
+            box.style.display = 'none';
+        }
+
+        async function copiarCodigoCreado() {
+            if (!ultimoCodigoCreado) return;
+            try {
+                await navigator.clipboard.writeText(ultimoCodigoCreado);
+                mostrarNotificacion('Código copiado', 'success');
+            } catch (e) {
+                mostrarNotificacion('No se pudo copiar el código', 'warning');
+            }
+        }
+
+        async function guardarPartida(idPartida) {
+            try {
+                const response = await fetch(`/api/partida/${idPartida}/guardar`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    mostrarNotificacion('Partida guardada exitosamente', 'success');
+                    cargarPartidas();
+                } else {
+                    mostrarNotificacion('Error al guardar partida', 'danger');
+                }
+            } catch (error) {
+                mostrarNotificacion('Error de conexión', 'danger');
+            }
+        }
+
+        function irAPartida(idPartida) {
+            window.location.href = `index.html?partida=${idPartida}`;
+        }
+
+        function irALobby(idPartida) {
+            window.location.href = `lobby-partida.html?partida=${idPartida}`;
+        }
+
+        verificarSesion();
+    </script>
+
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+        <div id="appToast" class="toast align-items-center text-bg-info border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div id="appToastBody" class="toast-body"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torneos - Ronda Marroquí</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .torneos-container {
+            min-height: 100vh;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+        .torneos-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .torneos-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #ffd700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .torneos-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+        .torneo-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .torneo-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(77, 142, 233, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .torneo-header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .torneo-nombre {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+        }
+        .torneo-tipo {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .tipo-eliminatorio {
+            background: rgba(220, 53, 69, 0.2);
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+        }
+        .tipo-todos-contra-todos {
+            background: rgba(52, 152, 219, 0.2);
+            color: #4dabf7;
+            border: 1px solid #4dabf7;
+        }
+        .torneo-estado {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .estado-pendiente {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+        .estado-en_curso {
+            background: rgba(40, 167, 69, 0.2);
+            color: #51cf66;
+            border: 1px solid #51cf66;
+        }
+        .estado-finalizado {
+            background: rgba(108, 117, 125, 0.2);
+            color: #adb5bd;
+            border: 1px solid #adb5bd;
+        }
+        .torneo-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+        .info-item i {
+            color: #4dabf7;
+        }
+        .progress-wrapper {
+            margin: 15px 0;
+        }
+        .progress {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #4dabf7 0%, #51cf66 100%);
+            transition: width 0.3s ease;
+        }
+        .cupo-text {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 5px;
+        }
+        .btn-inscribir {
+            background: linear-gradient(135deg, #51cf66 0%, #2ecc71 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 10px 25px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        .btn-inscribir:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(81, 207, 102, 0.4);
+        }
+        .btn-ver-detalles {
+            background: rgba(77, 142, 233, 0.2);
+            border: 1px solid #4dabf7;
+            color: #4dabf7;
+            font-weight: 600;
+            padding: 10px 25px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        .btn-ver-detalles:hover {
+            background: rgba(77, 142, 233, 0.3);
+            color: #fff;
+        }
+        .crear-torneo-card {
+            background: linear-gradient(135deg, rgba(77, 142, 233, 0.1) 0%, rgba(52, 152, 219, 0.1) 100%);
+            border: 2px dashed rgba(77, 142, 233, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .crear-torneo-card:hover {
+            background: linear-gradient(135deg, rgba(77, 142, 233, 0.2) 0%, rgba(52, 152, 219, 0.2) 100%);
+            border-color: rgba(77, 142, 233, 0.6);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .modal-content {
+            background: #2a3b4d;
+            color: white;
+        }
+        .modal-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .modal-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #4dabf7;
+            color: white;
+        }
+        .form-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="torneos-container">
+        <div class="container">
+            <div class="torneos-header">
+                <h1 class="torneos-title">
+                    <i class="fas fa-trophy me-3"></i>Torneos
+                </h1>
+                <p class="torneos-subtitle">Compite contra los mejores jugadores y escala posiciones</p>
+            </div>
+
+            <div class="text-center mb-4">
+                <button onclick="window.location.href='welcome.html'" class="btn btn-outline-light me-2">
+                    <i class="fas fa-home me-2"></i>Inicio
+                </button>
+                <button onclick="window.location.href='sala-espera.html'" class="btn btn-outline-light me-2">
+                    <i class="fas fa-gamepad me-2"></i>Partidas
+                </button>
+                <button onclick="window.location.href='profile.html'" class="btn btn-outline-light">
+                    <i class="fas fa-user me-2"></i>Mi Perfil
+                </button>
+            </div>
+
+            <div id="adminSection" class="crear-torneo-card d-none" data-bs-toggle="modal" data-bs-target="#crearTorneoModal">
+                <i class="fas fa-plus-circle fa-3x mb-3" style="color: #4dabf7;"></i>
+                <h4 style="color: white;">Crear Nuevo Torneo</h4>
+                <p style="color: rgba(255,255,255,0.6);">Solo administradores</p>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark text-white border-secondary">
+                            <i class="fas fa-filter"></i>
+                        </span>
+                        <select id="filtroEstado" class="form-select bg-dark text-white border-secondary">
+                            <option value="todos">Todos los estados</option>
+                            <option value="pendiente" selected>Pendientes</option>
+                            <option value="en_curso">En curso</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <button onclick="cargarTorneos()" class="btn btn-primary w-100">
+                        <i class="fas fa-sync-alt me-2"></i>Actualizar
+                    </button>
+                </div>
+            </div>
+
+            <div id="torneosLista">
+                <div class="text-center">
+                    <div class="spinner-border text-light" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="crearTorneoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-trophy me-2"></i>Crear Nuevo Torneo
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formCrearTorneo">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre del Torneo</label>
+                            <input type="text" class="form-control" id="nombreTorneo" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tipo de Torneo</label>
+                                <select class="form-select" id="tipoTorneo" required>
+                                    <option value="eliminatorio">Eliminatorio</option>
+                                    <option value="todos_contra_todos">Todos contra todos</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Máximo Participantes</label>
+                                <select class="form-select" id="maxParticipantes" required>
+                                    <option value="4">4 jugadores</option>
+                                    <option value="8">8 jugadores</option>
+                                    <option value="16">16 jugadores</option>
+                                    <option value="32">32 jugadores</option>
+                                </select>
+                                <small class="text-muted">Para eliminatorio debe ser potencia de 2</small>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Cartas Iniciales</label>
+                                <select class="form-select" id="cartasIniciales" required>
+                                    <option value="3">3 cartas</option>
+                                    <option value="4">4 cartas</option>
+                                    <option value="5" selected>5 cartas</option>
+                                    <option value="6">6 cartas</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Fecha de Inicio</label>
+                                <input type="datetime-local" class="form-control" id="fechaInicio" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="crearTorneo()">
+                        <i class="fas fa-check me-2"></i>Crear Torneo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="detallesTorneoModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detallesTorneoTitulo"></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="detallesTorneoContenido">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentUser = null;
+
+        function escapeHtml(value) {
+            if (value === null || value === undefined) return '';
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function safeToken(value) {
+            const token = String(value ?? '').toLowerCase().trim();
+            const cleaned = token.replace(/[^a-z0-9_-]/g, '');
+            return cleaned;
+        }
+
+        function labelize(value) {
+            return escapeHtml(String(value ?? '').replace(/_/g, ' '));
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            await verificarSesion();
+            cargarTorneos();
+            
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('fechaInicio').min = now.toISOString().slice(0, 16);
+        });
+
+        async function verificarSesion() {
+            try {
+                const response = await fetch('/api/session', {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUser = data.user;
+                    
+                    if (currentUser.rol === 'admin') {
+                        document.getElementById('adminSection').classList.remove('d-none');
+                    }
+                } else {
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+            }
+        }
+
+        async function cargarTorneos() {
+            const lista = document.getElementById('torneosLista');
+            lista.innerHTML = '<div class="text-center"><div class="spinner-border text-light" role="status"></div></div>';
+
+            try {
+                const response = await fetch('/api/torneos/activos', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+
+                if (data.success && data.torneos.length > 0) {
+                    const filtro = document.getElementById('filtroEstado').value;
+                    let torneosFiltrados = data.torneos;
+                    
+                    if (filtro !== 'todos') {
+                        torneosFiltrados = data.torneos.filter(t => t.estado === filtro);
+                    }
+
+                    if (torneosFiltrados.length === 0) {
+                        lista.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-trophy"></i>
+                                <h4>No hay torneos con ese filtro</h4>
+                                <p>Prueba con otro filtro o crea un nuevo torneo</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    lista.innerHTML = torneosFiltrados.map(torneo => crearTorneoCard(torneo)).join('');
+                } else {
+                    lista.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-trophy"></i>
+                            <h4>No hay torneos activos</h4>
+                            <p>Sé el primero en crear uno</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                lista.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Error al cargar los torneos
+                    </div>
+                `;
+            }
+        }
+
+        function crearTorneoCard(torneo) {
+            const porcentaje = (torneo.participantes_actuales / torneo.max_participantes) * 100;
+            const fechaInicio = new Date(torneo.fecha_inicio).toLocaleString('es-ES', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const estadoToken = safeToken(torneo.estado) || 'desconocido';
+            const tipoToken = safeToken(torneo.tipo) || 'desconocido';
+            const estadoClass = `estado-${estadoToken}`;
+            const tipoClass = tipoToken === 'eliminatorio' ? 'tipo-eliminatorio' : 'tipo-todos-contra-todos';
+
+            return `
+                <div class="torneo-card">
+                    <div class="torneo-header-info">
+                        <div>
+                            <h3 class="torneo-nombre">${escapeHtml(torneo.nombre)}</h3>
+                            <div class="d-flex gap-2 mt-2">
+                                <span class="torneo-tipo ${tipoClass}">${labelize(torneo.tipo)}</span>
+                                <span class="torneo-estado ${estadoClass}">${labelize(torneo.estado)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="torneo-info">
+                        <div class="info-item">
+                            <i class="fas fa-users"></i>
+                            <span>${torneo.participantes_actuales}/${torneo.max_participantes} jugadores</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-layer-group"></i>
+                            <span>${torneo.cartas_iniciales} cartas</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>${fechaInicio}</span>
+                        </div>
+                    </div>
+
+                    <div class="progress-wrapper">
+                        <div class="progress">
+                            <div class="progress-bar" style="width: ${porcentaje}%"></div>
+                        </div>
+                        <div class="cupo-text">
+                            ${torneo.cupo_disponible > 0 
+                                ? `${torneo.cupo_disponible} lugar${torneo.cupo_disponible !== 1 ? 'es' : ''} disponible${torneo.cupo_disponible !== 1 ? 's' : ''}`
+                                : 'Cupo completo'
+                            }
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-3">
+                        ${torneo.estado === 'pendiente' && torneo.cupo_disponible > 0
+                            ? `<button class="btn btn-inscribir flex-grow-1" onclick="inscribirseEnTorneo(${torneo.id_torneo})">
+                                <i class="fas fa-user-plus me-2"></i>Inscribirse
+                              </button>`
+                            : ''
+                        }
+                        <button class="btn btn-ver-detalles ${torneo.estado === 'pendiente' && torneo.cupo_disponible > 0 ? '' : 'flex-grow-1'}" 
+                                onclick="verDetallesTorneo(${torneo.id_torneo})">
+                            <i class="fas fa-eye me-2"></i>Ver Detalles
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function crearTorneo() {
+            const form = document.getElementById('formCrearTorneo');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const data = {
+                nombre: document.getElementById('nombreTorneo').value.trim(),
+                tipo: document.getElementById('tipoTorneo').value,
+                max_participantes: parseInt(document.getElementById('maxParticipantes').value),
+                cartas_iniciales: parseInt(document.getElementById('cartasIniciales').value),
+                fecha_inicio: document.getElementById('fechaInicio').value
+            };
+
+            try {
+                const response = await fetch('/api/torneos/crear', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ Torneo creado exitosamente');
+                    bootstrap.Modal.getInstance(document.getElementById('crearTorneoModal')).hide();
+                    form.reset();
+                    cargarTorneos();
+                } else {
+                    alert('❌ ' + result.message);
+                }
+            } catch (error) {
+                alert('❌ Error al crear el torneo');
+            }
+        }
+
+        async function inscribirseEnTorneo(id_torneo) {
+            if (!confirm('¿Deseas inscribirte en este torneo?')) return;
+
+            try {
+                const response = await fetch(`/api/torneos/${id_torneo}/inscribir`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ id_usuario: currentUser.id_usuario })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ ' + result.message);
+                    cargarTorneos();
+                } else {
+                    alert('❌ ' + result.message);
+                }
+            } catch (error) {
+                alert('❌ Error al inscribirse en el torneo');
+            }
+        }
+
+        async function verDetallesTorneo(id_torneo) {
+            const modal = new bootstrap.Modal(document.getElementById('detallesTorneoModal'));
+            const contenido = document.getElementById('detallesTorneoContenido');
+            
+            contenido.innerHTML = '<div class="text-center"><div class="spinner-border text-light"></div></div>';
+            modal.show();
+
+            try {
+                const response = await fetch(`/api/torneos/${id_torneo}`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const torneo = data.torneo;
+                    document.getElementById('detallesTorneoTitulo').innerHTML = `
+                        <i class="fas fa-trophy me-2"></i>${escapeHtml(torneo.nombre)}
+                    `;
+
+                    contenido.innerHTML = `
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h5><i class="fas fa-info-circle me-2"></i>Información</h5>
+                                <p><strong>Estado:</strong> ${labelize(torneo.estado)}</p>
+                                <p><strong>Tipo:</strong> ${labelize(torneo.tipo)}</p>
+                                <p><strong>Cartas iniciales:</strong> ${torneo.cartas_iniciales}</p>
+                                <p><strong>Participantes:</strong> ${data.estadisticas.total_participantes}/${torneo.max_participantes}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h5><i class="fas fa-chart-bar me-2"></i>Estadísticas</h5>
+                                <p><strong>Partidas totales:</strong> ${data.estadisticas.total_partidas}</p>
+                                <p><strong>Completadas:</strong> ${data.estadisticas.partidas_completadas}</p>
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4"><i class="fas fa-ranking-star me-2"></i>Clasificación</h5>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Jugador</th>
+                                        <th>Puntos</th>
+                                        <th>Partidas</th>
+                                        <th>Ganadas</th>
+                                        <th>Perdidas</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.participantes.map((p, i) => `
+                                        <tr>
+                                            <td>${i + 1}</td>
+                                            <td>${escapeHtml(p.nombre_usuario)}</td>
+                                            <td><strong>${p.puntos}</strong></td>
+                                            <td>${p.partidas_jugadas || 0}</td>
+                                            <td class="text-success">${p.partidas_ganadas || 0}</td>
+                                            <td class="text-danger">${p.partidas_perdidas || 0}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                contenido.innerHTML = '<div class="alert alert-danger">Error al cargar los detalles</div>';
+            }
+        }
+
+        document.getElementById('filtroEstado').addEventListener('change', cargarTorneos);
+    </script>
+</body>
+</html>

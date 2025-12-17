@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partida vs Bot - Ronda Marroquí</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .game-wrap { min-height: 100vh; padding: 24px 12px; }
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(77, 142, 233, 0.35);
+            border-radius: 14px;
+            padding: 18px;
+        }
+        .table-card {
+            width: 110px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,.35);
+        }
+        .hand {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .hand button {
+            background: transparent;
+            border: 0;
+            padding: 0;
+        }
+        .hand img {
+            width: 90px;
+            height: auto;
+            border-radius: 10px;
+            transition: transform .35s ease;
+        }
+        .hand button:disabled img { opacity: .45; }
+        .hand button:not(:disabled):hover img { transform: translateY(-3px); }
+        .chip {
+            display: inline-flex;
+            gap: 10px;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.12);
+            color: rgba(255,255,255,.9);
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-wrap">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h2 class="text-white mb-1"><i class="fas fa-robot me-2"></i>Partida vs Bot</h2>
+                <div class="text-white-50">Partida #<span id="partidaId">-</span></div>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-light" type="button" onclick="window.location.href='vs-bot.html'">
+                    <i class="fas fa-arrow-left me-2"></i>Volver
+                </button>
+                <button class="btn btn-outline-secondary" type="button" onclick="refrescar()">
+                    <i class="fas fa-sync-alt me-2"></i>Actualizar
+                </button>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-lg-4">
+                <div class="panel">
+                    <div class="d-flex flex-column gap-2">
+                        <div class="chip"><i class="fas fa-user me-1"></i><span id="turnoTexto">Cargando...</span></div>
+                        <div class="chip"><i class="fas fa-layer-group me-1"></i>Mazo: <span id="deckCount">-</span></div>
+                        <div class="chip"><i class="fas fa-trash me-1"></i>Descarte: <span id="discardCount">-</span></div>
+                        <div class="chip"><i class="fas fa-users me-1"></i>Jugadores: <span id="playersCount">-</span></div>
+                        <div class="text-white-50" id="statusText"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="panel">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="text-white mb-0"><i class="fas fa-clone me-2"></i>Carta en mesa</h5>
+                        <button class="btn btn-primary" id="btnRobar" type="button" onclick="robarCarta()">
+                            <i class="fas fa-hand-paper me-2"></i>Robar
+                        </button>
+                    </div>
+                    <hr class="border-light opacity-25">
+                    <div class="d-flex justify-content-center">
+                        <img id="topCardImg" class="table-card" src="../../lib/img/reverso.png" alt="Carta en mesa">
+                    </div>
+                </div>
+
+                <div class="panel mt-3">
+                    <h5 class="text-white mb-3"><i class="fas fa-hand-holding me-2"></i>Tu mano</h5>
+                    <div class="hand" id="hand"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let partidaId = null;
+        let usuario = null;
+        let estado = null;
+        let polling = null;
+
+        async function verificarSesion() {
+            const res = await fetch('/api/session', { credentials: 'include' });
+            const data = await res.json();
+            if (!data.success) {
+                window.location.href = 'login.html';
+                return;
+            }
+            usuario = data.user;
+        }
+
+        function getPartidaId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('partida');
+        }
+
+        function cardToKey(card) {
+            return `${card.value}_${card.suit}`;
+        }
+
+        function render() {
+            if (!estado) return;
+
+            document.getElementById('partidaId').textContent = partidaId;
+            document.getElementById('deckCount').textContent = estado.deckCount ?? '-';
+            document.getElementById('discardCount').textContent = estado.discardCount ?? '-';
+            document.getElementById('playersCount').textContent = (estado.players ? estado.players.length : '-');
+
+            const jugadorActual = estado.nombreJugadorActual || (estado.players?.[estado.currentPlayer]?.name ?? '');
+            document.getElementById('turnoTexto').textContent = `Turno: ${jugadorActual}`;
+
+            const status = document.getElementById('statusText');
+            const esTurno = !!estado.esTurnoHumano;
+            status.textContent = esTurno ? 'Es tu turno.' : 'Esperando al bot...';
+
+            const btnRobar = document.getElementById('btnRobar');
+            btnRobar.disabled = !esTurno || !!estado.isGameOver;
+
+            const topCard = estado.topCard;
+            const topImg = document.getElementById('topCardImg');
+            if (topCard && topCard.image) {
+                topImg.src = topCard.image;
+            }
+
+            const handEl = document.getElementById('hand');
+            const yoIndex = estado.players?.findIndex(p => p.id_usuario === usuario?.id_usuario) ?? 0;
+            const miMano = estado.players?.[yoIndex]?.hand || [];
+
+            handEl.innerHTML = miMano.map(card => {
+                const disabled = (!esTurno || !!estado.isGameOver) ? 'disabled' : '';
+                const key = cardToKey(card);
+                return `
+                    <button type="button" ${disabled} onclick="jugarCarta('${key}')" aria-label="Jugar ${key}">
+                        <img src="${card.image}" alt="${key}">
+                    </button>
+                `;
+            }).join('');
+        }
+
+        async function cargarEstado() {
+            const res = await fetch(`/api/partida/vs-bot/${partidaId}`, { credentials: 'include' });
+            const data = await res.json();
+            if (!data.success) {
+                throw new Error(data.message || 'No se pudo cargar la partida');
+            }
+            estado = data.partida.estado;
+            render();
+
+            if (estado.isGameOver) {
+                detenerPolling();
+                mostrarNotificacion('Partida terminada.', 'info');
+                window.location.href = 'vs-bot.html';
+            }
+        }
+
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            const mensajeLimpio = sanitizarMensajeUsuario(mensaje);
+            const el = document.getElementById('appToast');
+            const body = document.getElementById('appToastBody');
+            if (!el || !body || !window.bootstrap) {
+                console.log(`[${tipo}] ${mensajeLimpio}`);
+                return;
+            }
+
+            el.classList.remove('text-bg-success', 'text-bg-danger', 'text-bg-warning', 'text-bg-info');
+            el.classList.add(`text-bg-${tipo}`);
+            body.textContent = mensajeLimpio;
+
+            const toast = bootstrap.Toast.getOrCreateInstance(el, { delay: 3500 });
+            toast.show();
+        }
+
+        function sanitizarMensajeUsuario(mensaje) {
+            if (mensaje === null || mensaje === undefined) return '';
+            let texto = String(mensaje);
+
+            texto = texto.replace(/https?:\/\/[^\s)]+/gi, '');
+            texto = texto.replace(/\b(localhost|127\.0\.0\.1)(:\d+)?\b/gi, 'servidor');
+            texto = texto.replace(/\s{2,}/g, ' ').trim();
+
+            return texto || 'Ha ocurrido un error.';
+        }
+
+        function elegirPaloSiete() {
+            return null;
+        }
+
+        async function jugarCarta(cartaKey) {
+            try {
+                const [valueStr, suit] = cartaKey.split('_');
+                const value = parseInt(valueStr);
+
+                let paloElegido = null;
+                if (value === 7) {
+                    paloElegido = await solicitarPaloParaSiete();
+                    if (!paloElegido) return;
+                }
+
+                const res = await fetch(`/api/partida/vs-bot/${partidaId}/movimiento`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        carta_jugada: cartaKey,
+                        palo_elegido: paloElegido
+                    })
+                });
+
+                const data = await res.json();
+                if (!data.success) {
+                    mostrarNotificacion(data.message || 'Movimiento inválido', 'danger');
+                    return;
+                }
+
+                estado = data.nuevo_estado;
+                render();
+
+                if (data.ganador !== null && data.ganador !== undefined) {
+                    detenerPolling();
+                    mostrarNotificacion(`Partida terminada. Ganador: ${data.ganador}`, 'info');
+                    window.location.href = 'vs-bot.html';
+                } else {
+                    await cargarEstado();
+                }
+            } catch (e) {
+                mostrarNotificacion(e.message || 'Error al jugar carta', 'danger');
+            }
+        }
+
+        async function robarCarta() {
+            try {
+                const res = await fetch(`/api/partida/vs-bot/${partidaId}/robar`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                const data = await res.json();
+                if (!data.success) {
+                    mostrarNotificacion(data.message || 'No se pudo robar', 'danger');
+                    return;
+                }
+
+                estado = data.nuevo_estado;
+                render();
+
+                if (data.ganador !== null && data.ganador !== undefined) {
+                    detenerPolling();
+                    mostrarNotificacion(`Partida terminada. Ganador: ${data.ganador}`, 'info');
+                    window.location.href = 'vs-bot.html';
+                } else {
+                    await cargarEstado();
+                }
+            } catch (e) {
+                mostrarNotificacion(e.message || 'Error al robar', 'danger');
+            }
+        }
+
+        async function refrescar() {
+            try {
+                await cargarEstado();
+            } catch (e) {
+                mostrarNotificacion(e.message || 'Error al actualizar', 'danger');
+            }
+        }
+
+        function iniciarPolling() {
+            detenerPolling();
+            polling = setInterval(() => {
+                cargarEstado().catch(() => {});
+            }, 1200);
+        }
+
+        function detenerPolling() {
+            if (polling) {
+                clearInterval(polling);
+                polling = null;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await verificarSesion();
+                partidaId = getPartidaId();
+                if (!partidaId) {
+                    mostrarNotificacion('No se especificó una partida.', 'warning');
+                    window.location.href = 'vs-bot.html';
+                    return;
+                }
+                await cargarEstado();
+                iniciarPolling();
+            } catch (e) {
+                mostrarNotificacion(e.message || 'Error inicializando la partida', 'danger');
+                window.location.href = 'vs-bot.html';
+            }
+        });
+    </script>
+
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+        <div id="appToast" class="toast align-items-center text-bg-info border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div id="appToastBody" class="toast-body"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalElegirPalo" tabindex="-1" aria-labelledby="modalElegirPaloLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalElegirPaloLabel">
+                        <i class="fas fa-leaf me-2"></i>
+                        Elige un palo
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-white-50 mb-3">Has jugado un 7. Selecciona el palo que estará activo.</p>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-light" data-suit="oros">Oros</button>
+                        <button type="button" class="btn btn-outline-light" data-suit="copas">Copas</button>
+                        <button type="button" class="btn btn-outline-light" data-suit="espadas">Espadas</button>
+                        <button type="button" class="btn btn-outline-light" data-suit="bastos">Bastos</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let modalElegirPaloInstance = null;
+        let resolverPaloPendiente = null;
+
+        function getModalElegirPalo() {
+            if (!modalElegirPaloInstance) {
+                const el = document.getElementById('modalElegirPalo');
+                modalElegirPaloInstance = new bootstrap.Modal(el);
+
+                el.addEventListener('hidden.bs.modal', () => {
+                    if (resolverPaloPendiente) {
+                        const resolve = resolverPaloPendiente;
+                        resolverPaloPendiente = null;
+                        resolve(null);
+                    }
+                });
+
+                el.querySelectorAll('button[data-suit]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const suit = btn.getAttribute('data-suit');
+                        if (resolverPaloPendiente) {
+                            const resolve = resolverPaloPendiente;
+                            resolverPaloPendiente = null;
+                            resolve(suit);
+                        }
+                        modalElegirPaloInstance.hide();
+                    });
+                });
+            }
+            return modalElegirPaloInstance;
+        }
+
+        function solicitarPaloParaSiete() {
+            return new Promise((resolve) => {
+                resolverPaloPendiente = resolve;
+                getModalElegirPalo().show();
+            });
+        }
+    </script>
+</body>
+</html>

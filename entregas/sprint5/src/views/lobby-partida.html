@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sala de Espera - Partida</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .lobby-container {
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .lobby-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(77, 142, 233, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .player-slot {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .player-slot.occupied {
+            background: rgba(77, 142, 233, 0.1);
+            border-color: rgba(77, 142, 233, 0.3);
+        }
+        .player-slot.bot {
+            background: rgba(255, 193, 7, 0.1);
+            border-color: rgba(255, 193, 7, 0.3);
+        }
+        .player-slot.empty {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .player-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .player-avatar.bot {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .player-details h4 {
+            margin: 0;
+            color: #fff;
+            font-size: 1.2rem;
+        }
+        .player-details p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+        .partida-header-info {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .partida-header-info h2 {
+            color: #ffd700;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .status-waiting {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+        .status-ready {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="lobby-container">
+        <div class="container">
+            <div class="partida-header-info">
+                <h2><i class="fas fa-door-open me-2"></i>Sala de Espera</h2>
+                <p class="text-white-50">Partida #<span id="partidaId">...</span></p>
+                <div class="status-badge status-waiting" id="statusBadge">
+                    <i class="fas fa-users me-2"></i>
+                    <span id="playersCount">0</span>/<span id="maxPlayers">0</span> jugadores
+                </div>
+            </div>
+
+            <div class="lobby-card">
+                <h4 class="text-white mb-4">
+                    <i class="fas fa-users me-2"></i>
+                    Jugadores en la sala
+                </h4>
+
+                <div id="playersList">
+                </div>
+
+                <div id="creatorActions" style="display: none;" class="mt-4">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success btn-lg" id="startGameBtn" onclick="iniciarPartida()" disabled>
+                            <i class="fas fa-play me-2"></i>
+                            Iniciar Partida
+                        </button>
+                    </div>
+                </div>
+
+                <div id="playerActions" style="display: none;" class="mt-4">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-lg" id="joinGameBtn" onclick="unirsePartidaPublica()" style="display:none;">
+                            <i class="fas fa-user-plus me-2"></i>
+                            Unirse a la Partida
+                        </button>
+                        <button class="btn btn-success btn-lg" id="enterGameBtn" onclick="entrarAPartida()" style="display:none;">
+                            <i class="fas fa-gamepad me-2"></i>
+                            Entrar a Jugar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button class="btn btn-outline-light" onclick="salirDeLaSala()">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Salir de la Sala
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let usuarioActual = null;
+        let partidaId = null;
+        let esCreador = false;
+        let partidaInfo = null;
+        let jugadoresCache = [];
+        let creadorId = null;
+
+        function escapeHtml(value) {
+            if (value === null || value === undefined) return '';
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        async function verificarSesion() {
+            try {
+                const response = await fetch('/api/session', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (!data.success) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                usuarioActual = data.user;
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                partidaId = urlParams.get('partida');
+                
+                if (!partidaId) {
+                    alert('No se especificó una partida');
+                    window.location.href = 'sala-espera.html';
+                    return;
+                }
+                
+                document.getElementById('partidaId').textContent = partidaId;
+                
+                await cargarPartida();
+                iniciarActualizacionAutomatica();
+            } catch (error) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function cargarPartida() {
+            try {
+                const response = await fetch(`/api/partida/${partidaId}/jugadores`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (!data.success) {
+                    alert('Error al cargar partida');
+                    window.location.href = 'sala-espera.html';
+                    return;
+                }
+
+                jugadoresCache = Array.isArray(data.jugadores) ? data.jugadores : [];
+                creadorId = (data && data.creador_id !== undefined && data.creador_id !== null) ? Number(data.creador_id) : null;
+                esCreador = creadorId !== null && Number(usuarioActual.id_usuario) === creadorId;
+                
+                if (esCreador) {
+                    document.getElementById('creatorActions').style.display = 'block';
+                    document.getElementById('playerActions').style.display = 'none';
+                } else {
+                    document.getElementById('playerActions').style.display = 'block';
+                }
+
+                const partidaResponse = await fetch(`/api/partida/${partidaId}`, {
+                    credentials: 'include'
+                });
+                const partidaData = await partidaResponse.json();
+                
+                if (partidaData.success) {
+                    partidaInfo = partidaData.partida;
+                }
+
+                renderizarJugadores(jugadoresCache);
+                actualizarContadores();
+            } catch (error) {
+            }
+        }
+
+        function renderizarJugadores(jugadores) {
+            const container = document.getElementById('playersList');
+            const maxJugadores = partidaInfo ? partidaInfo.max_jugadores : 4;
+            
+            let html = '';
+
+            jugadores.forEach((jugador, index) => {
+                const esBot = jugador.esBot || false;
+                const iconoBot = esBot ? '<i class="fas fa-robot"></i>' : '<i class="fas fa-user"></i>';
+                const claseSlot = esBot ? 'player-slot occupied bot' : 'player-slot occupied';
+                const clasAvatar = esBot ? 'player-avatar bot' : 'player-avatar';
+                
+                html += `
+                    <div class="${claseSlot}">
+                        <div class="player-info">
+                            <div class="${clasAvatar}">
+                                ${iconoBot}
+                            </div>
+                            <div class="player-details">
+                                <h4>${escapeHtml(jugador.nombre_usuario)}</h4>
+                                <p>${esBot ? `Bot (${escapeHtml(jugador.dificultad || 'normal')})` : 'Jugador'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const slotsVacios = maxJugadores - jugadores.length;
+            for (let i = 0; i < slotsVacios; i++) {
+                html += `
+                    <div class="player-slot empty">
+                        <div class="player-info">
+                            <div class="player-avatar" style="background: rgba(255, 255, 255, 0.1);">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="player-details">
+                                <h4 style="color: rgba(255, 255, 255, 0.4);">Esperando jugador...</h4>
+                                <p>Slot disponible</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+            actualizarContadores();
+        }
+
+        function actualizarContadores() {
+            const jugadoresActuales = Array.isArray(jugadoresCache) ? jugadoresCache.length : 0;
+            const maxJugadores = (partidaInfo && typeof partidaInfo.max_jugadores === 'number')
+                ? partidaInfo.max_jugadores
+                : 4;
+            
+            document.getElementById('playersCount').textContent = jugadoresActuales;
+            document.getElementById('maxPlayers').textContent = maxJugadores;
+            
+            const statusBadge = document.getElementById('statusBadge');
+            const startBtn = document.getElementById('startGameBtn');
+            const joinBtn = document.getElementById('joinGameBtn');
+            const enterBtn = document.getElementById('enterGameBtn');
+
+            const yoEstoyEnLaPartida = Array.isArray(jugadoresCache)
+                ? jugadoresCache.some(j => Number(j.id_usuario) === Number(usuarioActual && usuarioActual.id_usuario))
+                : false;
+            const estaEnCurso = !!(partidaInfo && partidaInfo.estado === 'en_curso');
+            const esPublica = !!(partidaInfo && !partidaInfo.es_privada);
+
+            if (!esCreador) {
+                if (enterBtn) {
+                    enterBtn.style.display = (yoEstoyEnLaPartida && estaEnCurso) ? 'block' : 'none';
+                }
+                if (joinBtn) {
+                    const puedeUnirse = esPublica && !yoEstoyEnLaPartida && !estaEnCurso && jugadoresActuales < maxJugadores;
+                    joinBtn.style.display = puedeUnirse ? 'block' : 'none';
+                }
+            }
+            
+            if (jugadoresActuales === maxJugadores) {
+                statusBadge.className = 'status-badge status-ready';
+                statusBadge.innerHTML = '<i class="fas fa-check me-2"></i>Partida Lista';
+                if (esCreador) {
+                    startBtn.disabled = false;
+                }
+            } else {
+                statusBadge.className = 'status-badge status-waiting';
+                statusBadge.innerHTML = `<i class="fas fa-users me-2"></i>${jugadoresActuales}/${maxJugadores} jugadores`;
+                if (esCreador) {
+                    startBtn.disabled = true;
+                }
+            }
+        }
+
+        async function unirsePartidaPublica() {
+            try {
+                const response = await fetch(`/api/partida/${partidaId}/unirse`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    await cargarPartida();
+                } else {
+                    alert(data.message || 'No se pudo unir a la partida');
+                }
+            } catch (error) {
+                alert('Error de conexión al unirse a la partida');
+            }
+        }
+
+        async function iniciarPartida() {
+            try {
+                const response = await fetch(`/api/partida/${partidaId}/iniciar`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    window.location.href = `index.html?partida=${partidaId}`;
+                } else {
+                    alert(data.message || 'No se pudo iniciar la partida');
+                }
+            } catch (error) {
+                alert('Error de conexión al iniciar la partida');
+            }
+        }
+
+        function entrarAPartida() {
+            window.location.href = `index.html?partida=${partidaId}`;
+        }
+
+        function salirDeLaSala() {
+            if (confirm('¿Seguro que quieres salir de la sala?')) {
+                window.location.href = 'sala-espera.html';
+            }
+        }
+
+        function iniciarActualizacionAutomatica() {
+            setInterval(async () => {
+                await cargarPartida();
+            }, 2000);
+        }
+
+        document.addEventListener('DOMContentLoaded', verificarSesion);
+    </script>
+</body>
+</html>
